@@ -130,3 +130,66 @@ def test_pararev_import_excludes_missing_revision():
     records, excluded = convert_pararev_rows(rows, "2026-11-05")
     assert records == []
     assert excluded == 1
+
+
+
+def test_pararev_full_import_maps_hyphenated_fields_and_metadata():
+    from og_awc.acquire import convert_pararev_full_rows
+
+    rows = [{
+        "id_source": "article-version-a",
+        "id_target": "article-version-b",
+        "index_paragraph": 12,
+        "id_paragraph": "article-version-a.article-version-b.12",
+        "parag-1": "Original full paragraph.",
+        "parag-2": "Revised full paragraph.",
+        "list-sentences-1": [{"text": "Original sentence."}],
+        "list-sentences-2": [{"text": "Revised sentence."}],
+    }]
+    records, excluded = convert_pararev_full_rows(rows, "2026-11-05")
+    assert excluded == 0
+    assert len(records) == 1
+    record = records[0]
+    assert record["original_text"] == "Original full paragraph."
+    assert record["revised_text"] == "Revised full paragraph."
+    assert record["record_id"].startswith("pararev-")
+    assert record["paper_id"].startswith("pararev-paper-")
+    assert record["provenance"]["source_file"] == "pararev_full_without_annotation.jsonl"
+    assert record["provenance"]["source_paragraph_index"] == 12
+    assert record["provenance"]["source_sentences_1"] == [{"text": "Original sentence."}]
+    assert validate_record(record) == []
+
+
+def test_pararev_full_import_groups_connected_versions():
+    from og_awc.acquire import convert_pararev_full_rows
+
+    rows = [
+        {"id_source": "v1", "id_target": "v2", "id_paragraph": "p1",
+         "parag-1": "Original one.", "parag-2": "Revised one."},
+        {"id_source": "v2", "id_target": "v3", "id_paragraph": "p2",
+         "parag-1": "Original two.", "parag-2": "Revised two."},
+        {"id_source": "v8", "id_target": "v9", "id_paragraph": "p3",
+         "parag-1": "Other original.", "parag-2": "Other revised."},
+    ]
+    records, excluded = convert_pararev_full_rows(rows, "2026-11-05")
+    assert excluded == 0
+    assert records[0]["paper_id"] == records[1]["paper_id"]
+    assert records[0]["paper_id"] != records[2]["paper_id"]
+
+
+def test_pararev_full_and_annotated_subset_share_record_identity():
+    from og_awc.acquire import convert_pararev_full_rows
+
+    full_rows = [{
+        "id_source": "version-a", "id_target": "version-b",
+        "id_paragraph": "same-paragraph", "parag-1": "Same original.",
+        "parag-2": "Same revised.",
+    }]
+    full_records, _ = convert_pararev_full_rows(full_rows, "2026-11-05")
+    annotated_rows = [{
+        "id_source": "version-a", "id_target": "version-b",
+        "id_paragraph": "same-paragraph", "parag_1": "Same original.",
+        "parag_2": "Same revised.",
+    }]
+    annotated_records, _ = convert_pararev_rows(annotated_rows, "2026-11-05")
+    assert full_records[0]["record_id"] == annotated_records[0]["record_id"]

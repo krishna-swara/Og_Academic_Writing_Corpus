@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+from og_awc.acquire import convert_pararev_rows
 from og_awc.deduplicate import deduplicate
 from og_awc.pipeline import prepare_dataset
 from og_awc.split import assign_splits, check_paper_leakage
@@ -66,3 +67,39 @@ def test_prepare_rejects_invalid_input(tmp_path):
     bad.write_text('{"not":"a corpus record"}\n', encoding="utf-8")
     with pytest.raises(ValueError):
         prepare_dataset(bad, tmp_path / "out")
+
+
+def test_pararev_import_maps_real_revision_and_provenance():
+    rows = [{
+        "id_paragraph": "paragraph-7",
+        "id_source": "paper-1",
+        "id_target": "version-2",
+        "parag_1": "Original paragraph.",
+        "parag_2": "Revised paragraph.",
+        "annot_1": {"annotation": ["Concision"], "instruction": ""},
+        "annot_2": None
+    }]
+    records, excluded = convert_pararev_rows(rows, "2026-11-05")
+    assert excluded == 0
+    assert len(records) == 1
+    record = records[0]
+    assert record["record_type"] == "revision_pair"
+    assert record["original_text"] == "Original paragraph."
+    assert record["revised_text"] == "Revised paragraph."
+    assert record["paper_id"] == "paper-1"
+    assert record["provenance"]["license_id"] == "cc-by-nc-sa-4.0"
+    assert record["provenance"]["source_annotations"]["annot_1"]["annotation"] == ["Concision"]
+    assert validate_record(record) == []
+
+
+def test_pararev_import_excludes_missing_revision():
+    rows = [{
+        "id_paragraph": "paragraph-7",
+        "id_source": "paper-1",
+        "id_target": "version-2",
+        "parag_1": "Original paragraph.",
+        "parag_2": "",
+    }]
+    records, excluded = convert_pararev_rows(rows, "2026-11-05")
+    assert records == []
+    assert excluded == 1

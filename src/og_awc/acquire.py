@@ -76,8 +76,8 @@ def convert_pararev_rows(rows: list[dict[str, Any]], acquisition_date: str) -> t
     records: list[dict[str, Any]] = []
     excluded = 0
     for row_number, row in enumerate(rows, 1):
-        original = row.get("parag_1")
-        revised = row.get("parag_2")
+        original = row.get("parag_1") or row.get("parag-1")
+        revised = row.get("parag_2") or row.get("parag-2")
         source_version_id = row.get("id_source")
         target_version_id = row.get("id_target")
         paragraph_id = row.get("id_paragraph")

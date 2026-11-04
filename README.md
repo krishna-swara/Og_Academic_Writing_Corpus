@@ -1,73 +1,52 @@
 # Og Academic Writing Corpus (Og-AWC)
 
-A carefully documented corpus and deterministic data pipeline for academic writing analysis and revision research.
+A provenance-aware corpus toolkit and deterministic pipeline for academic writing analysis and legitimate revision research.
 
-## Project goals
+## What it does
 
-Og-AWC is designed to support transparent, reproducible academic-writing improvement workflows using structured examples, explicit provenance, and human-reviewed revision pairs.
+- Validates structured sentence/paragraph records and provenance.
+- Deduplicates normalized original/revision pairs.
+- Assigns train/validation/test splits by **paper ID** to prevent same-paper leakage.
+- Writes reproducible local split files and a preparation report.
+- Keeps synthetic fixtures separate from research data and requires real revision text for revision-pair records.
 
-The project focuses on:
-- sentence- and paragraph-level revision records with traceable provenance;
-- grammar, clarity, cohesion, terminology, and academic-register annotations;
-- deterministic normalization, deduplication, validation, and leakage-resistant splitting;
-- clear separation between source text, genuine revision pairs, synthetic fixtures, and human-approved edits.
-
-## Non-goals and safeguards
-
-- No generative AI, hosted AI API, or Ollama dependency is part of the core pipeline.
-- The project does not promise to evade AI detectors, plagiarism checks, or similarity systems.
-- A published-paper corpus is not, by itself, evidence of an author's personal style or human authorship.
-- Never fabricate a revised version for a source-only paper.
-- Never redistribute third-party text unless the applicable license and terms permit it.
-- Public accessibility does not imply permission to download, transform, or redistribute content.
-
-## Repository layout
-
-```text
-raw_sources/       Optional locally acquired source material (not committed by default)
-processed/         Normalized corpus outputs (generated; review before publishing)
-annotations/       Human-reviewed edit annotations
-evaluation/        Paper-level validation and test splits
-metadata/          Source and license registries, dataset card
-schemas/           JSON Schemas for records and registries
-src/og_awc/        Deterministic processing and validation package
-scripts/           Command-line pipeline entry points
-tests/             Automated tests and synthetic fixtures
-```
-
-## Data policy
-
-Every imported source must have a registry entry containing its canonical name, source URL, version or release, acquisition date, license identifier and URL, attribution requirements, redistribution status, and notes on restrictions. If terms are unclear, mark the source as `review_required` and do not redistribute its contents.
-
-CASIMIR, ParaRev, and JFLEG are candidate sources, not blanket permission to redistribute. Verify the current dataset card, upstream terms, underlying paper rights, and any non-commercial/share-alike or attribution conditions before acquisition or publication. ParaRev's relationship to CASIMIR must be considered during deduplication; overlapping records must not be counted as independent examples.
-
-Published papers may be used only in ways permitted by their specific licenses and terms. Prefer storing metadata and permitted identifiers rather than full text when redistribution rights are absent.
-
-## Record principles
-
-- Preserve source IDs and paper/article IDs.
-- Keep original and revised text distinct.
-- Populate `revised_text` only when an actual revision is supplied or a human reviewer has approved the edit.
-- Label synthetic examples explicitly as test fixtures; never present them as collected research data.
-- Split by paper/article ID, not random sentence, to prevent train/validation/test leakage.
-- Keep transformations deterministic and record pipeline versions.
+The core pipeline uses Python and deterministic processing. It has no generative AI, hosted AI API, or Ollama dependency.
 
 ## Quick start
 
-Requires Python 3.10 or newer.
+Requires Python 3.10+.
 
 ```bash
 python -m pip install -e ".[dev]"
 pytest
 og-awc validate --input tests/fixtures/sample_records.jsonl
+og-awc prepare --input tests/fixtures/sample_records.jsonl --output-dir processed/demo
 ```
 
-The first implementation milestone provides schemas, registries, validation, deduplication, group-aware splitting, and synthetic test fixtures. It does not bundle third-party corpora.
+The `prepare` command writes `all.jsonl`, `train.jsonl`, `validation.jsonl`, `test.jsonl`, `duplicates.jsonl`, and `report.json`. Default ratios are 80/10/10, assigned deterministically using paper IDs and a seed. Small datasets may not populate every split. These are local working outputs; generating a file does not grant permission to publish or redistribute its source text.
 
-## Project status
+## Data and licensing safeguards
 
-Early development. No third-party corpus text is included in this repository at bootstrap. Source acquisition is intentionally gated on license review.
+Candidate sources include CASIMIR, ParaRev, JFLEG, and individually licensed open-access papers. See `metadata/source_registry.json` and `metadata/license_registry.json`. Their declared terms are a starting point only; source-text redistribution remains disabled pending review of authoritative dataset versions, underlying paper rights, attribution, non-commercial/share-alike conditions, and included third-party content.
+
+ParaRev is related to CASIMIR; track source lineage and remove overlap rather than treating related records as independent examples. Open access is not blanket permission to redistribute. Do not commit source data until its exact terms allow it.
+
+## Record principles
+
+- Preserve source IDs, paper IDs, source versions, acquisition dates, and license provenance.
+- Never invent a revised version for a source-only paper.
+- Label synthetic fixtures explicitly; they are not empirical research data.
+- Split by paper/article ID, never by random sentence.
+- Review generated artifacts and source permissions before publication.
+
+## Scope and limitations
+
+This project supports transparent writing improvement. It does not promise AI-detector evasion, plagiarism concealment, authorship verification, or a particular detector outcome. A paper corpus alone does not establish personal writing style or human authorship.
+
+## Development
+
+Run `pytest -q`. GitHub Actions runs tests and validates the synthetic fixture on pushes and pull requests.
 
 ## License
 
-The repository's own code and documentation license will be declared separately. That license does not grant rights to third-party datasets or paper content referenced by this project.
+The project code and documentation license is described in the repository license file. It does not grant rights to third-party datasets or paper content referenced by this project.

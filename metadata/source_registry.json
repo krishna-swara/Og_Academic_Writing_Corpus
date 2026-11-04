@@ -1,5 +1,5 @@
 {
-  "registry_version": "1.3",
+  "registry_version": "1.4",
   "sources": [
     {
       "source_id": "pararev",
@@ -63,6 +63,35 @@
       "license_id": "per_item",
       "reported_size": null,
       "relationship_notes": "Official policy states ACL materials before 2016 use CC BY-NC-SA 3.0 and materials from 2016 onward use CC BY 4.0; third-party materials are excluded from that policy. Metadata is programmatically accessible via the ACL Anthology repository/package. Filter each paper by publication date and check third-party content; retain per-paper attribution and license metadata."
+    },
+    {
+      "source_id": "pararev_full",
+      "name": "ParaRev full unannotated corpus",
+      "url": "https://huggingface.co/datasets/taln-ls2n/pararev",
+      "revision": "e61dc8a43ae067513208e75f79b49f9928dcbec3",
+      "file": "pararev_full_without_annotation.jsonl",
+      "status": "implementation_pending_review",
+      "license_id": "cc-by-nc-sa-4.0",
+      "reported_size": "48,844 paragraph pairs (dataset-card reported)",
+      "relationship_notes": "The full corpus includes the 641 manually annotated ParaRev rows. Stable identity should be used to identify overlap; do not count annotated subset as independent. ParaRev is derived from CASIMIR. Keep local pending rights and attribution review."
+    },
+    {
+      "source_id": "pmc_oa",
+      "name": "PubMed Central Open Access Subset",
+      "url": "https://pmc.ncbi.nlm.nih.gov/tools/openftlist/",
+      "status": "candidate_article_level_license_filter_required",
+      "license_id": "per_item",
+      "reported_size": null,
+      "relationship_notes": "Only articles explicitly in the PMC Open Access Subset are candidates. Licenses vary by article; inspect each article's license. Automated retrieval must use NCBI-authorized PMC services (Cloud Service, OAI-PMH, E-Utilities, BioC); do not scrape the main site."
+    },
+    {
+      "source_id": "acl_seed_papers",
+      "name": "Curated ACL Anthology research-paper references",
+      "url": "https://aclanthology.org/",
+      "status": "metadata_catalog_only",
+      "license_id": "per_item",
+      "reported_size": "3 seed papers catalogued in metadata/seed_papers.json",
+      "relationship_notes": "Paper metadata and links only at this stage. ACL policy is publication-date based for ACL materials (pre-2016 CC BY-NC-SA 3.0; 2016 onward CC BY 4.0); third-party content is excluded. Verify individual paper and included material before text ingestion."
     }
   ]
 }

@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "registry_version": "1.4",
-=======
   "registry_version": "1.5",
->>>>>>> b1ca2a2e714f96f9e48d50c24a548ef216bbff13
   "sources": [
     {
       "source_id": "pararev",
@@ -78,8 +74,6 @@
       "license_id": "cc-by-nc-sa-4.0",
       "reported_size": "48,844 paragraph revision pairs (dataset card)",
       "relationship_notes": "Dataset card declares CC BY-NC-SA 4.0. The full file contains the 641-row manually annotated ParaRev evaluation subset; it is not an independent dataset. The importer uses matching stable record IDs to identify overlap. ParaRev is extracted from CASIMIR. Underlying article rights remain unresolved; local-only pending rights review."
-<<<<<<< HEAD
-=======
     },
     {
       "source_id": "pmc_oa",
@@ -98,7 +92,6 @@
       "license_id": "per_item",
       "reported_size": "3 seed papers catalogued in metadata/seed_papers.json",
       "relationship_notes": "Paper metadata and links only at this stage. ACL policy is publication-date based for ACL materials (pre-2016 CC BY-NC-SA 3.0; 2016 onward CC BY 4.0); third-party content is excluded. Verify individual paper and included material before text ingestion."
->>>>>>> b1ca2a2e714f96f9e48d50c24a548ef216bbff13
     }
   ]
 }

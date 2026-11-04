@@ -48,3 +48,27 @@ A candidate should not enter the core corpus until the following are recorded:
 5. Keep general grammar-correction benchmarks separate from academic-writing revision data.
 
 **Status meaning:** “candidate” means worth investigating, not approved for ingestion or redistribution.
+
+
+## Additional source candidates and real-paper seed list
+
+| Source | What to collect | Admission rule |
+|---|---|---|
+| [ParaRev full](https://huggingface.co/datasets/taln-ls2n/pararev) | Full scientific paragraph revision pairs | Use the pinned importer; annotated 641 subset overlaps with full data; retain CASIMIR lineage. |
+| [PMC Open Access Subset](https://pmc.ncbi.nlm.nih.gov/tools/openftlist/) | Biomedical full-text papers | Select only articles with explicit reusable licenses. License is article-specific. Use only NCBI-authorized bulk retrieval services. |
+| [ACL Anthology](https://aclanthology.org/) | NLP/computational-linguistics papers and metadata | Start with metadata and paper-level license filtering. ACL's policy differs before/after 2016 and excludes third-party materials. |
+| [BAWE via Oxford Text Archive](https://ota.bodleian.ox.ac.uk/repository/xmlui/handle/20.500.12024/2539) | Student academic texts and genre metadata | Register and comply with non-commercial access conditions; do not assume redistribution permission. |
+| [MICUSP](https://elicorpora.info/main) | Upper-level student papers and metadata | Research/teaching access; commercial use needs prior permission. Confirm terms before bulk processing. |
+
+### Real research papers to index first
+
+The metadata-only starter bibliography is in [seed_papers.json](seed_papers.json). It starts with the CASIMIR and ParaRev dataset papers plus the ACL Anthology Reference Corpus paper. These are real scholarly publications and useful methodology references; they are not a license to copy their full text. Expand the bibliography by discipline and section after paper-level rights review.
+
+### Acquisition order
+
+1. Finish the ParaRev full importer and test the full-file schema, output count, and stable overlap with the 641 annotated records.
+2. Add a CASIMIR lineage manifest and overlap audit before any CASIMIR ingestion.
+3. Build a metadata-first ACL Anthology paper catalog; ingest full text only where per-paper and third-party rights permit.
+4. Add PMC Open Access as a biomedical source with article-level license filters and compliant NCBI retrieval.
+5. Obtain BAWE and MICUSP through their official access routes and honor research-only/non-commercial conditions.
+6. Keep source-only paper examples separate from genuine author revision pairs and human-reviewed edits.

@@ -1,19 +1,19 @@
 {
-  "registry_version": "1.1",
+  "registry_version": "1.2",
   "licenses": [
     {
       "license_id": "mit_declared_pending_review",
       "spdx_id": "MIT",
       "status": "dataset_card_declared_pending_review",
       "redistribution_allowed": false,
-      "notes": "CASIMIR's current Hugging Face card declares MIT. This registry deliberately keeps redistribution disabled until underlying OpenReview article rights and all included content terms are reviewed."
+      "notes": "CASIMIR's Hugging Face card declares MIT. Keep source text blocked until underlying OpenReview article rights and included third-party content are reviewed."
     },
     {
       "license_id": "cc-by-nc-sa-4.0",
       "spdx_id": "CC-BY-NC-SA-4.0",
-      "status": "declared_upstream_restrictions_apply",
+      "status": "upstream_declared_local_opt_in_only",
       "redistribution_allowed": false,
-      "notes": "Declared by ParaRev and JFLEG dataset cards. Attribution, non-commercial, and share-alike conditions apply. Confirm exact upstream version and downstream compatibility before any redistribution."
+      "notes": "ParaRev and JFLEG cards declare CC BY-NC-SA 4.0. Attribution, non-commercial, and share-alike conditions apply. The importer requires explicit acknowledgement and stores data locally. This is not legal advice and does not resolve third-party rights in underlying paper text."
     },
     {
       "license_id": "per_item",
@@ -27,7 +27,7 @@
       "spdx_id": null,
       "status": "internal_fixture",
       "redistribution_allowed": true,
-      "notes": "For original synthetic test fixtures created for this repository only; not a third-party dataset license."
+      "notes": "For original synthetic test fixtures created for this repository only."
     }
   ]
 }

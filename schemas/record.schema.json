@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/og-awc/record.schema.json",
+  "title": "Og-AWC corpus record",
+  "type": "object",
+  "required": ["record_id", "source_id", "paper_id", "record_type", "original_text", "revised_text", "split", "provenance"],
+  "properties": {
+    "record_id": {"type": "string", "minLength": 1},
+    "source_id": {"type": "string", "minLength": 1},
+    "paper_id": {"type": "string", "minLength": 1},
+    "record_type": {"enum": ["revision_pair", "source_only", "human_reviewed_edit", "synthetic_fixture"]},
+    "original_text": {"type": "string", "minLength": 1},
+    "revised_text": {"type": ["string", "null"]},
+    "split": {"enum": ["train", "validation", "test", "unassigned"]},
+    "edit_labels": {"type": "array", "items": {"enum": ["grammar", "clarity", "cohesion", "terminology", "academic_register", "other"]}},
+    "provenance": {
+      "type": "object",
+      "required": ["source_url", "license_id", "acquisition_date"],
+      "properties": {
+        "source_url": {"type": ["string", "null"]},
+        "license_id": {"type": "string", "minLength": 1},
+        "acquisition_date": {"type": ["string", "null"], "format": "date"},
+        "source_record_id": {"type": ["string", "null"]},
+        "reviewer": {"type": ["string", "null"]},
+        "notes": {"type": "string"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"record_type": {"enum": ["revision_pair", "human_reviewed_edit"]}}},
+      "then": {"properties": {"revised_text": {"type": "string", "minLength": 1}}}
+    },
+    {
+      "if": {"properties": {"record_type": {"enum": ["source_only", "synthetic_fixture"]}}},
+      "then": {"properties": {"revised_text": {"type": ["string", "null"]}}}
+    }
+  ],
+  "additionalProperties": false
+}

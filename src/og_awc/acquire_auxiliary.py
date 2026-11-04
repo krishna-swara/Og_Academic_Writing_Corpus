@@ -63,7 +63,7 @@ def convert_jfleg_files(raw_dir: str | Path, acquisition_date: str) -> tuple[lis
                     continue
                 records.append({
                     "record_id": f"{sentence_id}-ref{ref_index}",
-                    "source_id": "jfleg_aux",
+                    "source_id": "jfleg",
                     "paper_id": sentence_id,
                     "record_type": "revision_pair",
                     "original_text": source.strip(),
@@ -104,7 +104,7 @@ def acquire_jfleg(output_path: str | Path, raw_dir: str | Path, accept_license: 
         for record in records:
             handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
     manifest = {
-        "source_id": "jfleg_aux",
+        "source_id": "jfleg",
         "source_url": "https://huggingface.co/datasets/jhu-clsp/jfleg",
         "upstream_repository": "https://github.com/keisks/jfleg",
         "source_revision": JFLEG_REVISION,

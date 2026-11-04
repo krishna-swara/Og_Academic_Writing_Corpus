@@ -1,0 +1,43 @@
+{
+  "catalog_version": "1.0",
+  "purpose": "A curated bibliography of real research papers relevant to academic writing, scientific revision, and corpus methodology. This is metadata and links only; it does not redistribute paper full text.",
+  "items": [
+    {
+      "paper_id": "jourdan-etal-2024-casimir",
+      "title": "CASIMIR: A Corpus of Scientific Articles Enhanced with Multiple Author-Integrated Revisions",
+      "authors": ["Léane Jourdan", "Florian Boudin", "Nicolas Hernandez", "Richard Dufour"],
+      "year": 2024,
+      "venue": "LREC-COLING 2024",
+      "doi": "10.18653/v1/2024.lrec-main.257",
+      "url": "https://aclanthology.org/2024.lrec-main.257/",
+      "role": ["revision-corpus-methodology", "scientific-writing"],
+      "source_relationship": "CASIMIR source corpus; ParaRev is derived from CASIMIR.",
+      "text_status": "metadata_only",
+      "rights_status": "paper-level_and_underlying_corpus_rights_review_required"
+    },
+    {
+      "paper_id": "jourdan-etal-2025-pararev",
+      "title": "ParaRev: Building a dataset for Scientific Paragraph Revision annotated with revision instruction",
+      "authors": ["Léane Jourdan", "Florian Boudin", "Richard Dufour", "Nicolas Hernandez", "Akiko Aizawa"],
+      "year": 2025,
+      "venue": "WRAICOGS 2025",
+      "pages": "35-44",
+      "url": "https://aclanthology.org/2025.wraicogs-1.4/",
+      "role": ["paragraph-revision", "revision-instructions", "evaluation-design"],
+      "source_relationship": "Describes ParaRev; the annotated 641-row subset is contained in the full ParaRev corpus.",
+      "text_status": "metadata_only",
+      "rights_status": "check_acl_policy_and_third_party_material_before_text_ingestion"
+    },
+    {
+      "paper_id": "bird-etal-2008-acl-anthology-reference-corpus",
+      "title": "The ACL Anthology Reference Corpus: A Reference Dataset for Bibliographic Research in Computational Linguistics",
+      "authors": ["Steven Bird", "Robert Dale", "Bonnie Dorr", "Bryan Gibson", "Mark Joseph", "Min-Yen Kan", "Dongwon Lee", "Boris S. L. Tan", "Yee Fan Tan", "Yuk Wah Wong"],
+      "year": 2008,
+      "venue": "LREC 2008",
+      "url": "https://aclanthology.org/L08-1111/",
+      "role": ["corpus-design", "bibliographic-metadata", "computational-linguistics"],
+      "text_status": "metadata_only",
+      "rights_status": "pre_2016_acl_cc_by_nc_sa_3_0_policy_applies_to_acl_materials_subject_to_third_party_exceptions"
+    }
+  ]
+}

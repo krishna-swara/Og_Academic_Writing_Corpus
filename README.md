@@ -45,4 +45,4 @@ Use `--accept-license` only if the use is non-commercial and you can comply with
 - Open access is not blanket permission to redistribute.
 - No detector-evasion, plagiarism-concealment, or authorship-verification claims.
 
-See `metadata/source_registry.json`, `metadata/license_registry.json`, and `metadata/dataset_card.md`.
+See `metadata/source_registry.json`, `metadata/license_registry.json`, `metadata/dataset_card.md`, and [`metadata/source_discovery.md`](metadata/source_discovery.md) for source triage and next acquisition priorities. The BAWE, MICUSP, and ACL Anthology entries are candidates with access/license checks pending; they are not yet ingested.

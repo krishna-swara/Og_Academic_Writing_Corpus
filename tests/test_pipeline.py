@@ -215,10 +215,10 @@ def test_jfleg_converter_preserves_four_human_references_and_upstream_splits(tmp
 
     for split, folder in [("validation", "dev"), ("test", "test")]:
         (tmp_path / folder).mkdir()
-        (tmp_path / folder / f"{folder}.src").write_text("Original sentence.\\n", encoding="utf-8")
+        (tmp_path / folder / f"{folder}.src").write_text("Original sentence.\n", encoding="utf-8")
         for index in range(4):
             (tmp_path / folder / f"{folder}.ref{index}").write_text(
-                f"Human correction {index}.\\n", encoding="utf-8"
+                f"Human correction {index}.\n", encoding="utf-8"
             )
     records, counts = convert_jfleg_files(tmp_path, "2026-11-05")
     assert counts == {"validation": 1, "test": 1}
@@ -236,10 +236,10 @@ def test_jfleg_converter_rejects_mismatched_reference_files(tmp_path):
     (tmp_path / "dev").mkdir()
     (tmp_path / "test").mkdir()
     for folder in ("dev", "test"):
-        (tmp_path / folder / f"{folder}.src").write_text("Source.\\n", encoding="utf-8")
+        (tmp_path / folder / f"{folder}.src").write_text("Source.\n", encoding="utf-8")
         for index in range(4):
             (tmp_path / folder / f"{folder}.ref{index}").write_text(
-                "Correction.\\n" if index else "", encoding="utf-8"
+                "Correction.\n" if index else "", encoding="utf-8"
             )
     with pytest.raises(ValueError, match="line counts"):
         convert_jfleg_files(tmp_path, "2026-11-05")

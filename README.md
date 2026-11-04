@@ -33,6 +33,23 @@ Do not count the 641 annotated subset and full corpus as independent examples. I
 
 Use `--accept-license` only if the use is non-commercial and you can comply with attribution and share-alike requirements. Underlying paper rights may impose additional restrictions. Do not commit the downloaded data or publish processed text until the rights review is complete.
 
+### Batch acquisition (three sources)
+
+Run the following once to acquire three source tracks locally:
+
+```bash
+og-awc acquire-batch --accept-license
+```
+
+This runs:
+- ParaRev full: scientific paragraph revision pairs; the 641 annotated subset is contained within it and is not an independent dataset.
+- JFLEG: sentence-level human grammatical corrections. The original validation/test split and four references are preserved; keep this auxiliary benchmark separate from academic paragraph data.
+- ACL Anthology: bibliographic metadata only. No PDFs or paper full text are downloaded.
+
+The license acknowledgement applies to ParaRev and JFLEG (both declare CC BY-NC-SA 4.0). The command writes only to local `raw_sources/` and `processed/` directories; it does not push corpus data to GitHub. Validate the two normalized pair files with `og-awc validate`. Do not run the generic random split pipeline on JFLEG because its benchmark split is intentionally preserved.
+
+Individual commands are also available: `og-awc acquire-jfleg --accept-license` and `og-awc acquire-acl-catalog`.
+
 ### Other sources
 
 - CASIMIR's card declares MIT, but the dataset includes OpenReview articles; underlying paper and third-party rights still need review.

@@ -1,7 +1,10 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from og_awc.deduplicate import deduplicate
+from og_awc.pipeline import prepare_dataset
 from og_awc.split import assign_splits, check_paper_leakage
 from og_awc.validation import validate_jsonl, validate_record
 
@@ -46,3 +49,20 @@ def test_split_is_deterministic_and_paper_grouped():
     second = assign_splits(records, seed="test")
     assert first == second
     assert check_paper_leakage(first) == []
+
+
+def test_prepare_pipeline_writes_splits_and_report(tmp_path):
+    report = prepare_dataset(FIXTURE, tmp_path, seed="test-seed")
+    assert report["input_records"] == 3
+    assert report["unique_records"] == 3
+    assert (tmp_path / "train.jsonl").exists()
+    assert (tmp_path / "validation.jsonl").exists()
+    assert (tmp_path / "test.jsonl").exists()
+    assert json.loads((tmp_path / "report.json").read_text())["split_unit"] == "paper_id"
+
+
+def test_prepare_rejects_invalid_input(tmp_path):
+    bad = tmp_path / "bad.jsonl"
+    bad.write_text('{"not":"a corpus record"}\n', encoding="utf-8")
+    with pytest.raises(ValueError):
+        prepare_dataset(bad, tmp_path / "out")

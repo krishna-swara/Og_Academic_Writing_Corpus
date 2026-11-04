@@ -1,29 +1,29 @@
 {
-  "registry_version": "1.0",
+  "registry_version": "1.1",
   "sources": [
     {
       "source_id": "casimir",
       "name": "CASIMIR",
-      "url": "https://huggingface.co/datasets",
+      "url": "https://huggingface.co/datasets/taln-ls2n/CASIMIR",
       "status": "review_required",
-      "license_id": "unverified",
-      "relationship_notes": "Verify the exact upstream release, dataset card, paper rights, and redistribution terms before use."
+      "license_id": "mit_declared_pending_review",
+      "relationship_notes": "The current Hugging Face dataset card declares MIT. Keep redistribution disabled pending review of the dataset card/version, upstream OpenReview article rights, and any third-party content terms. The paper describes 15,646 scientific articles and revision histories. Do not assume the repository license clears all underlying article text."
     },
     {
       "source_id": "pararev",
       "name": "ParaRev",
-      "url": "https://huggingface.co/datasets",
+      "url": "https://huggingface.co/datasets/taln-ls2n/pararev",
       "status": "review_required",
-      "license_id": "unverified",
-      "relationship_notes": "Reported relationship to CASIMIR; deduplicate overlapping examples and avoid treating overlap as independent observations. Verify current terms."
+      "license_id": "cc-by-nc-sa-4.0",
+      "relationship_notes": "The current dataset card declares CC BY-NC-SA 4.0. Non-commercial and share-alike conditions apply; verify attribution and downstream compatibility before reuse or redistribution. ParaRev is extracted from CASIMIR, so track source lineage and deduplicate overlap rather than counting records as independent."
     },
     {
       "source_id": "jfleg",
       "name": "JFLEG",
-      "url": "https://huggingface.co/datasets",
+      "url": "https://huggingface.co/datasets/jhu-clsp/jfleg",
       "status": "review_required",
-      "license_id": "unverified",
-      "relationship_notes": "Verify current dataset card, attribution, non-commercial/share-alike conditions, and redistribution permissions."
+      "license_id": "cc-by-nc-sa-4.0",
+      "relationship_notes": "The current Hugging Face dataset card declares CC BY-NC-SA 4.0. Verify upstream repository terms and attribution; non-commercial/share-alike conditions apply."
     },
     {
       "source_id": "open_access_papers",

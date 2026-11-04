@@ -27,7 +27,8 @@
       "corpus_role": "source_only",
       "record_type": "source_only",
       "revision_pair": false,
-      "contribution_status": "user_uploaded",
+      "contribution_status": "author_contributed",
+      "authorship_note": "The contributor states that this is their own paper.",
       "file_variants": [
         "IEEE AgriSense.docx",
         "IEEE AgriSense(1).pdf"
@@ -38,9 +39,9 @@
         "verification_status": "self_reported_unverified",
         "interpretation": "Not evidence of human authorship; detector scores are not treated as ground-truth labels."
       },
-      "rights_status": "license_and_public_redistribution_permission_unverified",
-      "publication_status": "metadata_only_pending_rights_review",
-      "full_text_policy": "Do not commit or redistribute the uploaded DOCX/PDF or extracted full text publicly until the applicable publication license and permission from all relevant rights holders are confirmed.",
+      "rights_status": "author_contributed; publication_license_and_coauthor_permissions_to_be_checked_before_public_redistribution",
+      "publication_status": "metadata_only_pending_publication_rights_check",
+      "full_text_policy": "The contributor identifies this as their own paper. Before publishing the full text in this public repository, confirm any publisher or conference agreement and any applicable co-author permissions. The contributor may use the files locally for corpus processing.",
       "notes": [
         "The uploaded DOCX and PDF were inspected as two formats of the same paper.",
         "No genuine before-and-after revision pair was supplied; this is a source-only example.",

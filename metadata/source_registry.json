@@ -24,10 +24,10 @@
       "source_id": "jfleg",
       "name": "JFLEG",
       "url": "https://huggingface.co/datasets/jhu-clsp/jfleg",
-      "status": "review_required",
+      "status": "local_acquisition_opt_in",
       "license_id": "cc-by-nc-sa-4.0",
-      "reported_size": "1,503 sentence sources, each with four human corrections",
-      "relationship_notes": "Dataset card declares CC BY-NC-SA 4.0. This is a general grammatical-error-correction benchmark, not an academic-writing corpus. Keep it as a separate auxiliary benchmark, not mixed into academic paragraph training data."
+      "reported_size": "1,503 source sentences across validation/test; four human correction references each (up to 6,012 sentence-level pairs)",
+      "relationship_notes": "The Hugging Face dataset card declares CC BY-NC-SA 4.0. An opt-in importer preserves the upstream validation/test split and four human references. This is a sentence-level GEC benchmark, not academic paragraph writing; keep it separate from the academic revision corpus."
     },
     {
       "source_id": "open_access_papers",
@@ -59,10 +59,10 @@
       "source_id": "acl_anthology",
       "name": "ACL Anthology papers and metadata",
       "url": "https://aclanthology.org/faq/copyright/",
-      "status": "paper_level_license_filter_required",
+      "status": "metadata_catalog_only",
       "license_id": "per_item",
       "reported_size": null,
-      "relationship_notes": "Official policy states ACL materials before 2016 use CC BY-NC-SA 3.0 and materials from 2016 onward use CC BY 4.0; third-party materials are excluded from that policy. Metadata is programmatically accessible via the ACL Anthology repository/package. Filter each paper by publication date and check third-party content; retain per-paper attribution and license metadata."
+      "relationship_notes": "An opt-in catalog importer downloads the official consolidated BibTeX metadata only. It does not fetch PDFs or full text. The official Anthology API recommends its GitHub metadata repository/Python package; per-paper text license and third-party material must be checked before any full-text acquisition."
     },
     {
       "source_id": "pararev_full",

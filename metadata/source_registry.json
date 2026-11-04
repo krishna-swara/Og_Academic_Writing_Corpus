@@ -1,0 +1,37 @@
+{
+  "registry_version": "1.0",
+  "sources": [
+    {
+      "source_id": "casimir",
+      "name": "CASIMIR",
+      "url": "https://huggingface.co/datasets",
+      "status": "review_required",
+      "license_id": "unverified",
+      "relationship_notes": "Verify the exact upstream release, dataset card, paper rights, and redistribution terms before use."
+    },
+    {
+      "source_id": "pararev",
+      "name": "ParaRev",
+      "url": "https://huggingface.co/datasets",
+      "status": "review_required",
+      "license_id": "unverified",
+      "relationship_notes": "Reported relationship to CASIMIR; deduplicate overlapping examples and avoid treating overlap as independent observations. Verify current terms."
+    },
+    {
+      "source_id": "jfleg",
+      "name": "JFLEG",
+      "url": "https://huggingface.co/datasets",
+      "status": "review_required",
+      "license_id": "unverified",
+      "relationship_notes": "Verify current dataset card, attribution, non-commercial/share-alike conditions, and redistribution permissions."
+    },
+    {
+      "source_id": "open_access_papers",
+      "name": "Individually licensed open-access papers",
+      "url": null,
+      "status": "per_item_review",
+      "license_id": "per_item",
+      "relationship_notes": "Review each article license and terms individually; open access alone is not a redistribution grant."
+    }
+  ]
+}

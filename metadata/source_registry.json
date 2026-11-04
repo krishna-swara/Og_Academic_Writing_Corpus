@@ -1,5 +1,5 @@
 {
-  "registry_version": "1.2",
+  "registry_version": "1.3",
   "sources": [
     {
       "source_id": "pararev",
@@ -36,6 +36,33 @@
       "status": "per_item_review",
       "license_id": "per_item",
       "relationship_notes": "Review each article license and terms individually; open access alone is not a redistribution grant."
+    },
+    {
+      "source_id": "bawe",
+      "name": "British Academic Written English (BAWE)",
+      "url": "https://ota.bodleian.ox.ac.uk/repository/xmlui/handle/20.500.12024/2539",
+      "status": "access_terms_review_required",
+      "license_id": "per_item",
+      "reported_size": null,
+      "relationship_notes": "Bulk XML/TXT corpus is available through the Oxford Text Archive. Access is described as free for non-commercial researchers who register and agree to conditions of use. Review the current OTA terms and permitted text redistribution/processing before acquisition; suitable as source-only student academic writing, not revision pairs."
+    },
+    {
+      "source_id": "micusp",
+      "name": "Michigan Corpus of Upper-level Student Papers (MICUSP)",
+      "url": "https://elicorpora.info/main",
+      "status": "research_teaching_access_terms_review_required",
+      "license_id": "per_item",
+      "reported_size": null,
+      "relationship_notes": "University of Michigan states corpus files are freely available for study, research and teaching; commercial use requires prior permission and may require a fee. Confirm applicable terms and redistribution rights before bulk acquisition or publication. Suitable as source-only student writing, not revision pairs."
+    },
+    {
+      "source_id": "acl_anthology",
+      "name": "ACL Anthology papers and metadata",
+      "url": "https://aclanthology.org/faq/copyright/",
+      "status": "paper_level_license_filter_required",
+      "license_id": "per_item",
+      "reported_size": null,
+      "relationship_notes": "Official policy states ACL materials before 2016 use CC BY-NC-SA 3.0 and materials from 2016 onward use CC BY 4.0; third-party materials are excluded from that policy. Metadata is programmatically accessible via the ACL Anthology repository/package. Filter each paper by publication date and check third-party content; retain per-paper attribution and license metadata."
     }
   ]
 }

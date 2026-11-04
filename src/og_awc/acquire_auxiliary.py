@@ -150,7 +150,7 @@ def _bib_entries(text: str):
 
 
 def _bib_field(entry: str, field: str) -> str | None:
-    match = re.search(rf"(?is)\\b{re.escape(field)}\\s*=\\s*([{{\"])", entry)
+    match = re.search(rf"(?is)\b{re.escape(field)}\s*=\s*([{{\"])", entry)
     if not match:
         return None
     opener = match.group(1)
@@ -183,7 +183,7 @@ def acquire_acl_catalog(output_path: str | Path, raw_dir: str | Path) -> dict[st
     written = 0
     with output.open("w", encoding="utf-8", newline="\n") as handle:
         for entry in _bib_entries(bib_text):
-            head = re.match(r"@([A-Za-z]+)\\s*\\{\\s*([^,]+)", entry)
+            head = re.match(r"@([A-Za-z]+)\s*\\{\s*([^,]+)", entry)
             if not head:
                 continue
             item = {

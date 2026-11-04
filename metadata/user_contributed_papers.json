@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "records": [
+    {
+      "paper_id": "agrisense-mahishi-2026",
+      "title": "AgriSense: Crop Disease Detection and Agentic AI Chatbot",
+      "authors": [
+        "Swarali A. Mahishi",
+        "Kaivalya Gharat",
+        "Yashodhan Rajapkar",
+        "Sushopti Gawade"
+      ],
+      "year": 2026,
+      "affiliation": "Vidyalankar Institute of Technology, Wadala (East), Mumbai, Maharashtra, India",
+      "project_url": "https://github.com/yash9769/AgriSense",
+      "abstract": "The paper proposes AgriSense, a farming assistant combining CNN-based crop disease detection with multilingual chatbot interaction, multiple large language models, and retrieval-augmented generation. It describes a ResNet50 classifier for Chickpea and Blackgram disease categories, a FastAPI backend, React frontend, and Supabase authentication and storage.",
+      "keywords": [
+        "crop disease detection",
+        "convolutional neural network",
+        "ResNet50",
+        "multi-LLM",
+        "retrieval-augmented generation",
+        "agentic chatbot",
+        "precision agriculture",
+        "multilingual NLP"
+      ],
+      "corpus_role": "source_only",
+      "record_type": "source_only",
+      "revision_pair": false,
+      "contribution_status": "user_uploaded",
+      "file_variants": [
+        "IEEE AgriSense.docx",
+        "IEEE AgriSense(1).pdf"
+      ],
+      "duplicate_policy": "Both uploaded files represent the same paper and count as one source record.",
+      "ai_detector_note": {
+        "reported_by_contributor": "AI score reported as 0 by the user",
+        "verification_status": "self_reported_unverified",
+        "interpretation": "Not evidence of human authorship; detector scores are not treated as ground-truth labels."
+      },
+      "rights_status": "license_and_public_redistribution_permission_unverified",
+      "publication_status": "metadata_only_pending_rights_review",
+      "full_text_policy": "Do not commit or redistribute the uploaded DOCX/PDF or extracted full text publicly until the applicable publication license and permission from all relevant rights holders are confirmed.",
+      "notes": [
+        "The uploaded DOCX and PDF were inspected as two formats of the same paper.",
+        "No genuine before-and-after revision pair was supplied; this is a source-only example.",
+        "The paper discusses AI-assisted components, but this does not establish how its prose was authored."
+      ]
+    }
+  ]
+}

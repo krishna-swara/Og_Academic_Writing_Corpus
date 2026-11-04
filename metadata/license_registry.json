@@ -1,12 +1,19 @@
 {
-  "registry_version": "1.0",
+  "registry_version": "1.1",
   "licenses": [
     {
-      "license_id": "unverified",
-      "spdx_id": null,
-      "status": "review_required",
+      "license_id": "mit_declared_pending_review",
+      "spdx_id": "MIT",
+      "status": "dataset_card_declared_pending_review",
       "redistribution_allowed": false,
-      "notes": "Placeholder only. Do not ingest or redistribute source text until authoritative terms are verified."
+      "notes": "CASIMIR's current Hugging Face card declares MIT. This registry deliberately keeps redistribution disabled until underlying OpenReview article rights and all included content terms are reviewed."
+    },
+    {
+      "license_id": "cc-by-nc-sa-4.0",
+      "spdx_id": "CC-BY-NC-SA-4.0",
+      "status": "declared_upstream_restrictions_apply",
+      "redistribution_allowed": false,
+      "notes": "Declared by ParaRev and JFLEG dataset cards. Attribution, non-commercial, and share-alike conditions apply. Confirm exact upstream version and downstream compatibility before any redistribution."
     },
     {
       "license_id": "per_item",

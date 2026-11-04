@@ -86,10 +86,37 @@ def test_pararev_import_maps_real_revision_and_provenance():
     assert record["record_type"] == "revision_pair"
     assert record["original_text"] == "Original paragraph."
     assert record["revised_text"] == "Revised paragraph."
-    assert record["paper_id"] == "paper-1"
+    assert record["paper_id"].startswith("pararev-paper-")
     assert record["provenance"]["license_id"] == "cc-by-nc-sa-4.0"
     assert record["provenance"]["source_annotations"]["annot_1"]["annotation"] == ["Concision"]
     assert validate_record(record) == []
+
+
+def test_pararev_article_versions_share_one_paper_split_group():
+    rows = [
+        {"id_paragraph": "p1", "id_source": "version-a", "id_target": "version-b",
+         "parag_1": "Original one.", "parag_2": "Revised one."},
+        {"id_paragraph": "p2", "id_source": "version-b", "id_target": "version-c",
+         "parag_1": "Original two.", "parag_2": "Revised two."},
+        {"id_paragraph": "p3", "id_source": "version-x", "id_target": "version-y",
+         "parag_1": "Other original.", "parag_2": "Other revised."},
+    ]
+    records, excluded = convert_pararev_rows(rows, "2026-11-05")
+    assert excluded == 0
+    assert records[0]["paper_id"] == records[1]["paper_id"]
+    assert records[0]["paper_id"] != records[2]["paper_id"]
+
+
+def test_pararev_paper_grouping_is_independent_of_row_order():
+    rows = [
+        {"id_paragraph": "p1", "id_source": "version-a", "id_target": "version-b",
+         "parag_1": "Original one.", "parag_2": "Revised one."},
+        {"id_paragraph": "p2", "id_source": "version-b", "id_target": "version-c",
+         "parag_1": "Original two.", "parag_2": "Revised two."},
+    ]
+    forward, _ = convert_pararev_rows(rows, "2026-11-05")
+    reverse, _ = convert_pararev_rows(list(reversed(rows)), "2026-11-05")
+    assert {r["paper_id"] for r in forward} == {r["paper_id"] for r in reverse}
 
 
 def test_pararev_import_excludes_missing_revision():

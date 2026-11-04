@@ -183,7 +183,7 @@ def acquire_acl_catalog(output_path: str | Path, raw_dir: str | Path) -> dict[st
     written = 0
     with output.open("w", encoding="utf-8", newline="\n") as handle:
         for entry in _bib_entries(bib_text):
-            head = re.match(r"@([A-Za-z]+)\s*\\{\s*([^,]+)", entry)
+            head = re.match(r"@([A-Za-z]+)\s*\{\s*([^,]+)", entry)
             if not head:
                 continue
             item = {

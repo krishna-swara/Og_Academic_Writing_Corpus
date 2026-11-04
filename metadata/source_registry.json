@@ -1,21 +1,24 @@
 {
-  "registry_version": "1.1",
+  "registry_version": "1.2",
   "sources": [
+    {
+      "source_id": "pararev",
+      "name": "ParaRev annotated subset",
+      "url": "https://huggingface.co/datasets/taln-ls2n/pararev",
+      "revision": "e61dc8a43ae067513208e75f79b49f9928dcbec3",
+      "file": "pararev_manual_annot_subset.jsonl",
+      "status": "local_acquisition_opt_in",
+      "license_id": "cc-by-nc-sa-4.0",
+      "reported_size": "641 manually annotated paragraph pairs",
+      "relationship_notes": "Dataset card declares CC BY-NC-SA 4.0. The importer is opt-in and local-only. ParaRev is extracted from CASIMIR; do not count overlapping examples as independent. The license declaration does not resolve rights in underlying paper text; review before public redistribution or commercial use."
+    },
     {
       "source_id": "casimir",
       "name": "CASIMIR",
       "url": "https://huggingface.co/datasets/taln-ls2n/CASIMIR",
       "status": "review_required",
       "license_id": "mit_declared_pending_review",
-      "relationship_notes": "The current Hugging Face dataset card declares MIT. Keep redistribution disabled pending review of the dataset card/version, upstream OpenReview article rights, and any third-party content terms. The paper describes 15,646 scientific articles and revision histories. Do not assume the repository license clears all underlying article text."
-    },
-    {
-      "source_id": "pararev",
-      "name": "ParaRev",
-      "url": "https://huggingface.co/datasets/taln-ls2n/pararev",
-      "status": "review_required",
-      "license_id": "cc-by-nc-sa-4.0",
-      "relationship_notes": "The current dataset card declares CC BY-NC-SA 4.0. Non-commercial and share-alike conditions apply; verify attribution and downstream compatibility before reuse or redistribution. ParaRev is extracted from CASIMIR, so track source lineage and deduplicate overlap rather than counting records as independent."
+      "relationship_notes": "The Hugging Face dataset card declares MIT, but the corpus contains OpenReview scientific articles. Review upstream article rights and all included third-party content before use or redistribution."
     },
     {
       "source_id": "jfleg",
@@ -23,7 +26,8 @@
       "url": "https://huggingface.co/datasets/jhu-clsp/jfleg",
       "status": "review_required",
       "license_id": "cc-by-nc-sa-4.0",
-      "relationship_notes": "The current Hugging Face dataset card declares CC BY-NC-SA 4.0. Verify upstream repository terms and attribution; non-commercial/share-alike conditions apply."
+      "reported_size": "1,503 sentence sources, each with four human corrections",
+      "relationship_notes": "Dataset card declares CC BY-NC-SA 4.0. This is a general grammatical-error-correction benchmark, not an academic-writing corpus. Keep it as a separate auxiliary benchmark, not mixed into academic paragraph training data."
     },
     {
       "source_id": "open_access_papers",

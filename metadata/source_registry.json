@@ -1,5 +1,5 @@
 {
-  "registry_version": "1.3",
+  "registry_version": "1.4",
   "sources": [
     {
       "source_id": "pararev",
@@ -63,6 +63,17 @@
       "license_id": "per_item",
       "reported_size": null,
       "relationship_notes": "Official policy states ACL materials before 2016 use CC BY-NC-SA 3.0 and materials from 2016 onward use CC BY 4.0; third-party materials are excluded from that policy. Metadata is programmatically accessible via the ACL Anthology repository/package. Filter each paper by publication date and check third-party content; retain per-paper attribution and license metadata."
+    },
+    {
+      "source_id": "pararev_full",
+      "name": "ParaRev full unannotated corpus",
+      "url": "https://huggingface.co/datasets/taln-ls2n/pararev",
+      "revision": "e61dc8a43ae067513208e75f79b49f9928dcbec3",
+      "file": "pararev_full_without_annotation.jsonl",
+      "status": "local_acquisition_opt_in",
+      "license_id": "cc-by-nc-sa-4.0",
+      "reported_size": "48,844 paragraph revision pairs (dataset card)",
+      "relationship_notes": "Dataset card declares CC BY-NC-SA 4.0. The full file contains the 641-row manually annotated ParaRev evaluation subset; it is not an independent dataset. The importer uses matching stable record IDs to identify overlap. ParaRev is extracted from CASIMIR. Underlying article rights remain unresolved; local-only pending rights review."
     }
   ]
 }

@@ -172,3 +172,200 @@ def acquire_pararev(output_path: str | Path, raw_dir: str | Path, accept_license
     manifest_path = output.with_suffix(".manifest.json")
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     return manifest
+
+# Full ParaRev corpus (unannotated revision pairs)
+FULL_FILENAME = "pararev_full_without_annotation.jsonl"
+FULL_DOWNLOAD_URL = f"{REPO_URL}/resolve/{REVISION}/{FULL_FILENAME}?download=true"
+
+
+def _iter_jsonl(path: Path):
+    """Yield JSON objects from a JSONL file with line-specific errors."""
+    with path.open(encoding="utf-8") as handle:
+        for line_no, line in enumerate(handle, 1):
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise ValueError(
+                    f"ParaRev JSONL line {line_no} is invalid: {exc.msg}"
+                ) from exc
+            if not isinstance(row, dict):
+                raise ValueError(f"ParaRev JSONL line {line_no} is not an object")
+            yield line_no, row
+
+
+def _pararev_full_record(
+    row: dict[str, Any],
+    row_number: int,
+    acquisition_date: str,
+    version_to_paper: dict[str, str],
+) -> dict[str, Any] | None:
+    """Normalize one row using the actual full-file hyphenated field names."""
+    original = row.get("parag-1")
+    revised = row.get("parag-2")
+    source_version_id = row.get("id_source")
+    target_version_id = row.get("id_target")
+    paragraph_id = row.get("id_paragraph")
+    if not all(
+        isinstance(value, str) and value.strip()
+        for value in (original, revised, source_version_id, target_version_id, paragraph_id)
+    ):
+        return None
+
+    source_version_id = source_version_id.strip()
+    target_version_id = target_version_id.strip()
+    paragraph_id = paragraph_id.strip()
+    pair_key = f"{paragraph_id}:{source_version_id}:{target_version_id}"
+    return {
+        "record_id": "pararev-" + hashlib.sha256(pair_key.encode("utf-8")).hexdigest()[:20],
+        "source_id": SOURCE_ID,
+        "paper_id": version_to_paper[source_version_id],
+        "record_type": "revision_pair",
+        "original_text": original.strip(),
+        "revised_text": revised.strip(),
+        "split": "unassigned",
+        "edit_labels": [],
+        "provenance": {
+            "source_url": REPO_URL,
+            "license_id": LICENSE_ID,
+            "acquisition_date": acquisition_date,
+            "source_record_id": paragraph_id,
+            "reviewer": None,
+            "notes": (
+                "ParaRev full unannotated subset. Source fields parag-1/id_source "
+                "and parag-2/id_target. The 641-row annotated evaluation subset is "
+                "included in this full corpus; do not count it as an independent source."
+            ),
+            "source_version": REVISION,
+            "source_file": FULL_FILENAME,
+            "source_row_number": row_number,
+            "source_article_version_id": source_version_id,
+            "source_target_id": target_version_id,
+            "source_paragraph_index": row.get("index_paragraph"),
+            "source_sentences_1": row.get("list-sentences-1"),
+            "source_sentences_2": row.get("list-sentences-2"),
+            "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            "attribution": (
+                "Jourdan et al., ParaRev: Building a dataset for Scientific Paragraph "
+                "Revision annotated with revision instruction (WRAICOGS 2025)."
+            ),
+        },
+    }
+
+
+def convert_pararev_full_rows(
+    rows: list[dict[str, Any]], acquisition_date: str
+) -> tuple[list[dict[str, Any]], int]:
+    """Convert full-corpus rows; expects upstream's hyphenated text field names."""
+    version_to_paper = _article_component_ids(rows)
+    records = []
+    excluded = 0
+    for row_number, row in enumerate(rows, 1):
+        record = _pararev_full_record(row, row_number, acquisition_date, version_to_paper)
+        if record is None:
+            excluded += 1
+        else:
+            records.append(record)
+    return records, excluded
+
+
+def acquire_pararev_full(
+    output_path: str | Path,
+    raw_dir: str | Path,
+    accept_license: bool = False,
+) -> dict[str, Any]:
+    """Download and normalize the 48k-pair ParaRev full file locally.
+
+    A first streaming pass collects only article-version edges for paper grouping;
+    a second pass writes normalized pairs, avoiding loading the 152 MB JSONL into RAM.
+    """
+    if not accept_license:
+        raise ValueError(
+            "ParaRev declares CC BY-NC-SA 4.0. Re-run with --accept-license only "
+            "if your use is non-commercial and you can comply with attribution "
+            "and share-alike terms."
+        )
+
+    raw_root = Path(raw_dir)
+    raw_root.mkdir(parents=True, exist_ok=True)
+    raw_path = raw_root / FULL_FILENAME
+    partial_path = raw_path.with_suffix(raw_path.suffix + ".part")
+    request = urllib.request.Request(
+        FULL_DOWNLOAD_URL,
+        headers={"User-Agent": "Og-AWC/0.1 dataset-acquisition"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=180) as response, partial_path.open("wb") as target:
+            while chunk := response.read(1024 * 1024):
+                target.write(chunk)
+        partial_path.replace(raw_path)
+    finally:
+        if partial_path.exists():
+            partial_path.unlink()
+
+    acquisition_date = datetime.now(timezone.utc).date().isoformat()
+    version_edges: list[dict[str, Any]] = []
+    input_rows = 0
+    for _, row in _iter_jsonl(raw_path):
+        input_rows += 1
+        version_edges.append({
+            "id_source": row.get("id_source"),
+            "id_target": row.get("id_target"),
+        })
+    version_to_paper = _article_component_ids(version_edges)
+
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    temporary_output = output.with_suffix(output.suffix + ".tmp")
+    written = 0
+    excluded = 0
+    try:
+        with temporary_output.open("w", encoding="utf-8", newline="\n") as handle:
+            for row_number, row in _iter_jsonl(raw_path):
+                record = _pararev_full_record(
+                    row, row_number, acquisition_date, version_to_paper
+                )
+                if record is None:
+                    excluded += 1
+                    continue
+                handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
+                written += 1
+        temporary_output.replace(output)
+    finally:
+        if temporary_output.exists():
+            temporary_output.unlink()
+
+    manifest = {
+        "source_id": SOURCE_ID,
+        "subset": "pararev_full",
+        "source_url": REPO_URL,
+        "source_revision": REVISION,
+        "source_file": FULL_FILENAME,
+        "license": LICENSE_ID,
+        "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "acquisition_date": acquisition_date,
+        "raw_file_sha256": sha256_file(raw_path),
+        "input_rows": input_rows,
+        "revision_pairs_written": written,
+        "rows_excluded_missing_required_fields": excluded,
+        "article_version_ids": len(version_to_paper),
+        "paper_components": len(set(version_to_paper.values())),
+        "raw_path": str(raw_path),
+        "normalized_path": str(output),
+        "publication_status": "local_only_pending_rights_and_attribution_review",
+        "overlap_policy": (
+            "The 641-row manually annotated ParaRev subset is included in this full "
+            "corpus. It is not an independent dataset; matching record IDs identify "
+            "the same paragraph pair across the two normalized files."
+        ),
+        "warning": (
+            "ParaRev is derived from CASIMIR. Do not combine with CASIMIR records "
+            "as independent examples. This importer does not grant commercial-use "
+            "rights or resolve underlying article rights."
+        ),
+    }
+    output.with_suffix(".manifest.json").write_text(
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+    )
+    return manifest

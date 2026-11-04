@@ -21,6 +21,16 @@ og-awc validate --input processed/pararev_pairs.jsonl
 og-awc prepare --input processed/pararev_pairs.jsonl --output-dir processed/pararev_splits
 ```
 
+The full unannotated ParaRev file is available as a separate local acquisition. Its upstream JSONL uses hyphenated field names and contains the 641 annotated evaluation pairs as a subset; stable record IDs are shared so overlapping rows can be identified.
+
+```bash
+og-awc acquire-pararev-full --accept-license
+og-awc validate --input processed/pararev_full_pairs.jsonl
+og-awc prepare --input processed/pararev_full_pairs.jsonl --output-dir processed/pararev_full_splits
+```
+
+Do not count the 641 annotated subset and full corpus as independent examples. If combining them, deduplicate by record identity/text and retain the annotations as metadata rather than extra independent samples.
+
 Use `--accept-license` only if the use is non-commercial and you can comply with attribution and share-alike requirements. Underlying paper rights may impose additional restrictions. Do not commit the downloaded data or publish processed text until the rights review is complete.
 
 ### Other sources

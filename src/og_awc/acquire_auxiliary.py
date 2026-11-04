@@ -187,7 +187,7 @@ def acquire_acl_catalog(output_path: str | Path, raw_dir: str | Path) -> dict[st
             if not head:
                 continue
             item = {
-                "source_id": "acl_anthology_metadata",
+                "source_id": "acl_anthology",
                 "bibtex_key": head.group(2).strip(),
                 "entry_type": head.group(1).lower(),
                 "title": _bib_field(entry, "title"),
@@ -203,7 +203,7 @@ def acquire_acl_catalog(output_path: str | Path, raw_dir: str | Path) -> dict[st
             handle.write(json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n")
             written += 1
     manifest = {
-        "source_id": "acl_anthology_metadata",
+        "source_id": "acl_anthology",
         "source_url": "https://aclanthology.org/faq/api/",
         "download_url": ACL_BIB_URL,
         "acquisition_date": date,

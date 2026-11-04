@@ -208,3 +208,50 @@ def test_pararev_full_import_excludes_incomplete_pair():
     records, excluded = convert_pararev_full_rows(rows, "2026-11-05")
     assert records == []
     assert excluded == 1
+
+
+def test_jfleg_converter_preserves_four_human_references_and_upstream_splits(tmp_path):
+    from og_awc.acquire_auxiliary import convert_jfleg_files
+
+    for split, folder in [("validation", "dev"), ("test", "test")]:
+        (tmp_path / folder).mkdir()
+        (tmp_path / folder / f"{folder}.src").write_text("Original sentence.\n", encoding="utf-8")
+        for index in range(4):
+            (tmp_path / folder / f"{folder}.ref{index}").write_text(
+                f"Human correction {index}.\n", encoding="utf-8"
+            )
+    records, counts = convert_jfleg_files(tmp_path, "2026-11-05")
+    assert counts == {"validation": 1, "test": 1}
+    assert len(records) == 8
+    assert {r["split"] for r in records} == {"validation", "test"}
+    assert len({r["paper_id"] for r in records if r["split"] == "validation"}) == 1
+    assert len({r["paper_id"] for r in records if r["split"] == "test"}) == 1
+    assert all(r["source_id"] == "jfleg" for r in records)
+    assert all(validate_record(r) == [] for r in records)
+
+
+def test_jfleg_converter_rejects_mismatched_reference_files(tmp_path):
+    from og_awc.acquire_auxiliary import convert_jfleg_files
+
+    (tmp_path / "dev").mkdir()
+    (tmp_path / "test").mkdir()
+    for folder in ("dev", "test"):
+        (tmp_path / folder / f"{folder}.src").write_text("Source.\n", encoding="utf-8")
+        for index in range(4):
+            (tmp_path / folder / f"{folder}.ref{index}").write_text(
+                "Correction.\n" if index else "", encoding="utf-8"
+            )
+    with pytest.raises(ValueError, match="line counts"):
+        convert_jfleg_files(tmp_path, "2026-11-05")
+
+
+def test_acl_bibtex_parser_handles_nested_braces():
+    from og_awc.acquire_auxiliary import _bib_entries, _bib_field
+
+    entry = next(_bib_entries(
+        "@inproceedings{sample-2024-test, title={A {Nested} Title}, "
+        "author={Doe, Jane}, year={2024}}"
+    ))
+    assert _bib_field(entry, "title") == "A {Nested} Title"
+    assert _bib_field(entry, "author") == "Doe, Jane"
+    assert _bib_field(entry, "year") == "2024"

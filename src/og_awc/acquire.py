@@ -28,21 +28,66 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _article_component_ids(rows: list[dict[str, Any]]) -> dict[str, str]:
+    """Return stable paper IDs for connected source/target article-version IDs.
+
+    ParaRev's id_source and id_target are CASIMIR article-version IDs, not
+    guaranteed unique paper IDs. Treat each source/target pair as an edge and
+    group every connected version lineage into one paper-level split unit.
+    """
+    parent: dict[str, str] = {}
+
+    def find(value: str) -> str:
+        parent.setdefault(value, value)
+        if parent[value] != value:
+            parent[value] = find(parent[value])
+        return parent[value]
+
+    def union(left: str, right: str) -> None:
+        root_left, root_right = find(left), find(right)
+        if root_left != root_right:
+            # Lexicographic root selection makes the component representative
+            # independent of input row order.
+            first, second = sorted((root_left, root_right))
+            parent[second] = first
+
+    for row in rows:
+        source_id, target_id = row.get("id_source"), row.get("id_target")
+        if (isinstance(source_id, str) and source_id.strip()
+                and isinstance(target_id, str) and target_id.strip()):
+            union(source_id.strip(), target_id.strip())
+
+    components: dict[str, list[str]] = {}
+    for version_id in list(parent):
+        components.setdefault(find(version_id), []).append(version_id)
+
+    result: dict[str, str] = {}
+    for version_ids in components.values():
+        digest_input = "\\0".join(sorted(version_ids))
+        paper_id = "pararev-paper-" + hashlib.sha256(digest_input.encode("utf-8")).hexdigest()[:20]
+        for version_id in version_ids:
+            result[version_id] = paper_id
+    return result
+
+
 def convert_pararev_rows(rows: list[dict[str, Any]], acquisition_date: str) -> tuple[list[dict[str, Any]], int]:
-    """Map genuine paragraph revision pairs; never synthesize missing revisions."""
+    """Map genuine paragraph revision pairs and group linked article versions."""
+    version_to_paper = _article_component_ids(rows)
     records: list[dict[str, Any]] = []
     excluded = 0
     for row_number, row in enumerate(rows, 1):
         original = row.get("parag_1")
         revised = row.get("parag_2")
-        paper_id = row.get("id_source")
-        target_id = row.get("id_target")
+        source_version_id = row.get("id_source")
+        target_version_id = row.get("id_target")
         paragraph_id = row.get("id_paragraph")
         if not all(isinstance(value, str) and value.strip()
-                   for value in (original, revised, paper_id, target_id, paragraph_id)):
+                   for value in (original, revised, source_version_id, target_version_id, paragraph_id)):
             excluded += 1
             continue
-        pair_key = f"{paragraph_id}:{paper_id}:{target_id}"
+        source_version_id = source_version_id.strip()
+        target_version_id = target_version_id.strip()
+        pair_key = f"{paragraph_id.strip()}:{source_version_id}:{target_version_id}"
         annotations = {
             "annot_1": row.get("annot_1"),
             "annot_2": row.get("annot_2"),
@@ -50,7 +95,7 @@ def convert_pararev_rows(rows: list[dict[str, Any]], acquisition_date: str) -> t
         records.append({
             "record_id": "pararev-" + hashlib.sha256(pair_key.encode("utf-8")).hexdigest()[:20],
             "source_id": SOURCE_ID,
-            "paper_id": paper_id,
+            "paper_id": version_to_paper[source_version_id],
             "record_type": "revision_pair",
             "original_text": original.strip(),
             "revised_text": revised.strip(),
@@ -60,20 +105,20 @@ def convert_pararev_rows(rows: list[dict[str, Any]], acquisition_date: str) -> t
                 "source_url": REPO_URL,
                 "license_id": LICENSE_ID,
                 "acquisition_date": acquisition_date,
-                "source_record_id": paragraph_id,
+                "source_record_id": paragraph_id.strip(),
                 "reviewer": None,
-                "notes": "ParaRev annotated subset; parag_1/id_source to parag_2/id_target. Human annotation metadata is retained below; annotations are not reinterpreted as Og-AWC labels.",
+                "notes": "ParaRev annotated subset; parag_1/id_source to parag_2/id_target. paper_id groups connected CASIMIR article-version IDs so related versions remain in one split. Human annotation metadata is retained below; annotations are not reinterpreted as Og-AWC labels.",
                 "source_version": REVISION,
                 "source_file": FILENAME,
                 "source_row_number": row_number,
-                "source_target_id": target_id,
+                "source_source_version_id": source_version_id,
+                "source_target_id": target_version_id,
                 "source_annotations": annotations,
                 "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
                 "attribution": "Jourdan et al., ParaRev: Building a dataset for Scientific Paragraph Revision annotated with revision instruction (WRAICOGS 2025)."
             }
         })
     return records, excluded
-
 
 def acquire_pararev(output_path: str | Path, raw_dir: str | Path, accept_license: bool = False) -> dict[str, Any]:
     if not accept_license:

@@ -56,3 +56,11 @@ Use `--accept-license` only if the use is non-commercial and you can comply with
 - No detector-evasion, plagiarism-concealment, or authorship-verification claims.
 
 See `metadata/source_registry.json`, `metadata/license_registry.json`, `metadata/dataset_card.md`, and [`metadata/source_discovery.md`](metadata/source_discovery.md) for source triage and next acquisition priorities. The BAWE, MICUSP, and ACL Anthology entries are candidates with access/license checks pending; they are not yet ingested.
+
+## Corpus expansion and writing policy
+
+- Source candidates, access restrictions, and acquisition priorities: [metadata/source_discovery.md](metadata/source_discovery.md).
+- Editorial and annotation rules for clarity, natural scholarly voice, section-aware revision, evidence preservation, and research integrity: [metadata/academic_writing_rules.md](metadata/academic_writing_rules.md).
+- Curated metadata-only bibliography of real research papers: [metadata/seed_papers.json](metadata/seed_papers.json).
+
+The corpus is designed to support authentic, clear academic communication while preserving author meaning and voice. It is not designed for detector evasion or plagiarism concealment. Real paper text remains subject to source-specific license and third-party rights checks.

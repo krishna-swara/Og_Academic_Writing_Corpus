@@ -202,13 +202,8 @@ def _pararev_full_record(
     version_to_paper: dict[str, str],
 ) -> dict[str, Any] | None:
     """Normalize one row using the actual full-file hyphenated field names."""
-<<<<<<< HEAD
-    original = row.get("parag_1") or row.get("parag-1")
-    revised = row.get("parag_2") or row.get("parag-2")
-=======
     original = row.get("parag-1")
     revised = row.get("parag-2")
->>>>>>> b1ca2a2e714f96f9e48d50c24a548ef216bbff13
     source_version_id = row.get("id_source")
     target_version_id = row.get("id_target")
     paragraph_id = row.get("id_paragraph")
@@ -238,13 +233,8 @@ def _pararev_full_record(
             "source_record_id": paragraph_id,
             "reviewer": None,
             "notes": (
-<<<<<<< HEAD
-                "ParaRev full unannotated subset. Source fields parag_1/id_source "
-                "and parag_2/id_target. The 641-row annotated evaluation subset is "
-=======
                 "ParaRev full unannotated subset. Source fields parag-1/id_source "
                 "and parag-2/id_target. The 641-row annotated evaluation subset is "
->>>>>>> b1ca2a2e714f96f9e48d50c24a548ef216bbff13
                 "included in this full corpus; do not count it as an independent source."
             ),
             "source_version": REVISION,

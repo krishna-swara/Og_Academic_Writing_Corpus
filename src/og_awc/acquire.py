@@ -111,7 +111,7 @@ def convert_pararev_rows(rows: list[dict[str, Any]], acquisition_date: str) -> t
                 "source_version": REVISION,
                 "source_file": FILENAME,
                 "source_row_number": row_number,
-                "source_source_version_id": source_version_id,
+                "source_article_version_id": source_version_id,
                 "source_target_id": target_version_id,
                 "source_annotations": annotations,
                 "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",

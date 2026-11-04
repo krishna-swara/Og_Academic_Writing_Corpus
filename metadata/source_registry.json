@@ -1,5 +1,5 @@
 {
-  "registry_version": "1.4",
+  "registry_version": "1.5",
   "sources": [
     {
       "source_id": "pararev",
@@ -74,6 +74,24 @@
       "license_id": "cc-by-nc-sa-4.0",
       "reported_size": "48,844 paragraph revision pairs (dataset card)",
       "relationship_notes": "Dataset card declares CC BY-NC-SA 4.0. The full file contains the 641-row manually annotated ParaRev evaluation subset; it is not an independent dataset. The importer uses matching stable record IDs to identify overlap. ParaRev is extracted from CASIMIR. Underlying article rights remain unresolved; local-only pending rights review."
+    },
+    {
+      "source_id": "pmc_oa",
+      "name": "PubMed Central Open Access Subset",
+      "url": "https://pmc.ncbi.nlm.nih.gov/tools/openftlist/",
+      "status": "candidate_article_level_license_filter_required",
+      "license_id": "per_item",
+      "reported_size": null,
+      "relationship_notes": "Only articles explicitly in the PMC Open Access Subset are candidates. Licenses vary by article; inspect each article's license. Automated retrieval must use NCBI-authorized PMC services (Cloud Service, OAI-PMH, E-Utilities, BioC); do not scrape the main site."
+    },
+    {
+      "source_id": "acl_seed_papers",
+      "name": "Curated ACL Anthology research-paper references",
+      "url": "https://aclanthology.org/",
+      "status": "metadata_catalog_only",
+      "license_id": "per_item",
+      "reported_size": "3 seed papers catalogued in metadata/seed_papers.json",
+      "relationship_notes": "Paper metadata and links only at this stage. ACL policy is publication-date based for ACL materials (pre-2016 CC BY-NC-SA 3.0; 2016 onward CC BY 4.0); third-party content is excluded. Verify individual paper and included material before text ingestion."
     }
   ]
 }

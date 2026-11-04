@@ -193,3 +193,18 @@ def test_pararev_full_and_annotated_subset_share_record_identity():
     }]
     annotated_records, _ = convert_pararev_rows(annotated_rows, "2026-11-05")
     assert full_records[0]["record_id"] == annotated_records[0]["record_id"]
+
+
+def test_pararev_full_import_excludes_incomplete_pair():
+    from og_awc.acquire import convert_pararev_full_rows
+
+    rows = [{
+        "id_source": "version-a",
+        "id_target": "version-b",
+        "id_paragraph": "paragraph-1",
+        "parag-1": "Original paragraph.",
+        "parag-2": "",
+    }]
+    records, excluded = convert_pararev_full_rows(rows, "2026-11-05")
+    assert records == []
+    assert excluded == 1

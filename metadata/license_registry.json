@@ -1,0 +1,26 @@
+{
+  "registry_version": "1.0",
+  "licenses": [
+    {
+      "license_id": "unverified",
+      "spdx_id": null,
+      "status": "review_required",
+      "redistribution_allowed": false,
+      "notes": "Placeholder only. Do not ingest or redistribute source text until authoritative terms are verified."
+    },
+    {
+      "license_id": "per_item",
+      "spdx_id": null,
+      "status": "per_item_review",
+      "redistribution_allowed": false,
+      "notes": "Permission must be determined for each paper or item from its authoritative license and applicable terms."
+    },
+    {
+      "license_id": "synthetic",
+      "spdx_id": null,
+      "status": "internal_fixture",
+      "redistribution_allowed": true,
+      "notes": "For original synthetic test fixtures created for this repository only; not a third-party dataset license."
+    }
+  ]
+}

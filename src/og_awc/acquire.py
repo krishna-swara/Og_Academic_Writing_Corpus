@@ -321,7 +321,7 @@ def acquire_pararev_full(
     written = 0
     excluded = 0
     try:
-        with temporary_output.open("w", encoding="utf-8", newline="\\n") as handle:
+        with temporary_output.open("w", encoding="utf-8", newline="\n") as handle:
             for row_number, row in _iter_jsonl(raw_path):
                 record = _pararev_full_record(
                     row, row_number, acquisition_date, version_to_paper
@@ -329,7 +329,7 @@ def acquire_pararev_full(
                 if record is None:
                     excluded += 1
                     continue
-                handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\\n")
+                handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
                 written += 1
         temporary_output.replace(output)
     finally:
@@ -366,6 +366,6 @@ def acquire_pararev_full(
         ),
     }
     output.with_suffix(".manifest.json").write_text(
-        json.dumps(manifest, indent=2) + "\\n", encoding="utf-8"
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
     )
     return manifest

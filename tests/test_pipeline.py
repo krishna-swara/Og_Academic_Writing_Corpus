@@ -226,7 +226,7 @@ def test_jfleg_converter_preserves_four_human_references_and_upstream_splits(tmp
     assert {r["split"] for r in records} == {"validation", "test"}
     assert len({r["paper_id"] for r in records if r["split"] == "validation"}) == 1
     assert len({r["paper_id"] for r in records if r["split"] == "test"}) == 1
-    assert all(r["source_id"] == "jfleg_aux" for r in records)
+    assert all(r["source_id"] == "jfleg" for r in records)
     assert all(validate_record(r) == [] for r in records)
 
 

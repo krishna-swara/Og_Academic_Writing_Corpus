@@ -201,9 +201,9 @@ def _pararev_full_record(
     acquisition_date: str,
     version_to_paper: dict[str, str],
 ) -> dict[str, Any] | None:
-    """Normalize one row using the actual full-file hyphenated field names."""
-    original = row.get("parag-1")
-    revised = row.get("parag-2")
+    """Normalize a full-corpus row across hyphenated and underscored schemas."""
+    original = row.get("parag-1") or row.get("parag_1")
+    revised = row.get("parag-2") or row.get("parag_2")
     source_version_id = row.get("id_source")
     target_version_id = row.get("id_target")
     paragraph_id = row.get("id_paragraph")
@@ -242,9 +242,9 @@ def _pararev_full_record(
             "source_row_number": row_number,
             "source_article_version_id": source_version_id,
             "source_target_id": target_version_id,
-            "source_paragraph_index": row.get("index_paragraph"),
-            "source_sentences_1": row.get("list-sentences-1"),
-            "source_sentences_2": row.get("list-sentences-2"),
+            "source_paragraph_index": row.get("index_paragraph", row.get("index-paragraph")),
+            "source_sentences_1": row.get("list-sentences-1", row.get("list_sentences_1")),
+            "source_sentences_2": row.get("list-sentences-2", row.get("list_sentences_2")),
             "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
             "attribution": (
                 "Jourdan et al., ParaRev: Building a dataset for Scientific Paragraph "
@@ -257,7 +257,7 @@ def _pararev_full_record(
 def convert_pararev_full_rows(
     rows: list[dict[str, Any]], acquisition_date: str
 ) -> tuple[list[dict[str, Any]], int]:
-    """Convert full-corpus rows; expects upstream's hyphenated text field names."""
+    """Convert full-corpus rows with either supported upstream field convention."""
     version_to_paper = _article_component_ids(rows)
     records = []
     excluded = 0

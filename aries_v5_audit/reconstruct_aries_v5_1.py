@@ -4,6 +4,7 @@
 import json
 import os
 import hashlib
+import inspect
 import sys
 from pathlib import Path
 from datetime import datetime
@@ -73,6 +74,28 @@ def calculate_file_hash(file_path):
         for chunk in iter(lambda: f.read(4096), b""):
             hash_sha256.update(chunk)
     return hash_sha256.hexdigest()
+
+def get_aries_implementation_source_hashes():
+    """Hash the actual imported ARIES implementation files (not the data inputs)."""
+    sources = {
+        "DocEdits": inspect.getsourcefile(DocEdits),
+        "fuse_back_matter": inspect.getsourcefile(official_fuse_back_matter),
+    }
+    hashes = {}
+    for component, source_path in sources.items():
+        if not source_path:
+            raise RuntimeError(
+                f"Cannot locate imported ARIES source file for {component}; "
+                "refusing to write incomplete implementation provenance."
+            )
+        path = Path(source_path).resolve()
+        if not path.is_file():
+            raise RuntimeError(f"Imported ARIES source file does not exist: {path}")
+        hashes[component] = {
+            "file": path.name,
+            "sha256": calculate_file_hash(path),
+        }
+    return hashes
 
 def main():
     # Fix 4: Full metrics reconciliation per audit requirements
@@ -353,8 +376,14 @@ def main():
             "parity_failure_samples.json": calculate_file_hash(samples_path)
         },
         "python_version": sys.version,
-        "aries_implementation_version": os.environ.get("ARIES_GIT_COMMIT", "UNSPECIFIED"),
-        "audit_note": "Set ARIES_GIT_COMMIT to the exact ARIES source commit before running."
+        "aries_implementation_version": "identified_by_imported_source_file_sha256",
+        "aries_implementation_source_hashes": get_aries_implementation_source_hashes(),
+        "audit_note": (
+            "The ARIES checkout may not be a Git repository, so no commit is asserted. "
+            "SHA-256 hashes identify the actual imported DocEdits and fuse_back_matter "
+            "implementation files used for this run. These are code hashes, distinct "
+            "from the paper_edits and S2ORC input-data hashes."
+        )
     }
     with open(manifest_path, 'w') as f:
         json.dump(manifest, f, indent=2)

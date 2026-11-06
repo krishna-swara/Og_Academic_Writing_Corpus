@@ -11,7 +11,11 @@ This branch preserves the original `audit/aries-v5` test run and adds a correcte
 - Makes test mode opt-in through `ARIES_TEST_MODE=1`; full processing is the default.
 - Separates whitespace mismatch side counts from record counts.
 - Adds strict edit-category and parity reconciliation assertions.
-- Removes the hard-coded ARIES version claim; set `ARIES_GIT_COMMIT` to the exact upstream commit before running.
+- Records SHA-256 hashes of the actual imported `DocEdits` and `fuse_back_matter` source files; it does not claim an upstream Git commit when the local ARIES checkout has no Git metadata.
+
+## Implementation provenance
+
+The run manifest records `aries_implementation_source_hashes` for the Python files containing the imported `DocEdits` and `fuse_back_matter` implementations. These hashes identify the code actually loaded at runtime and are separate from the hashes of `paper_edits.jsonl` and S2ORC data files. No Git commit is asserted when the local ARIES directory is not a Git checkout.
 
 ## Important limitations
 - This is a code correction, not a rerun of the 1,720-document corpus.

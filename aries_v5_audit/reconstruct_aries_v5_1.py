@@ -73,30 +73,40 @@ def reconstruct_text_from_indices(paper, indices):
 # Mismatch classification per audit requirements
 def classify_mismatch(our_text, official_text):
     """Classify differences without changing either stored text."""
+    our_text = our_text or ""
+    official_text = official_text or ""
     if our_text == official_text:
         return "exact_match"
 
     # Unicode-only differences must be detected before whitespace normalization.
-    our_nfc = unicodedata.normalize("NFC", our_text or "")
-    official_nfc = unicodedata.normalize("NFC", official_text or "")
+    our_nfc = unicodedata.normalize("NFC", our_text)
+    official_nfc = unicodedata.normalize("NFC", official_text)
     if our_nfc == official_nfc:
         return "unicode_normalization"
 
-    # Normalize horizontal whitespace inside paragraphs, but preserve paragraph count.
     def normalized_paragraphs(value):
-        value = value.replace("\\r\\n", "\\n").replace("\\r", "\\n")
-        paragraphs = [p for p in re.split(r"\\n\\s*\\n", value.strip()) if p.strip()]
-        return [re.sub(r"[ \\t\\f\\v]+", " ", p).strip() for p in paragraphs]
+        value = value.replace("\r\n", "\n").replace("\r", "\n")
+        paragraphs = [
+            paragraph for paragraph in re.split(r"\n\s*\n+", value.strip())
+            if paragraph.strip()
+        ]
+        return [
+            re.sub(r"[ \t\f\v]+", " ", paragraph).strip()
+            for paragraph in paragraphs
+        ]
 
     our_paras = normalized_paragraphs(our_nfc)
     official_paras = normalized_paragraphs(official_nfc)
+
+    # Same paragraph content and boundaries, with only horizontal spacing changes.
     if our_paras == official_paras:
         return "whitespace_only"
-    if len(our_paras) != len(official_paras):
-        # If paragraph boundaries alone account for the difference, classify separately.
-        flatten = lambda ps: re.sub(r"\\s+", " ", " ".join(ps)).strip()
-        if flatten(our_paras) == flatten(official_paras):
-            return "paragraph_boundary"
+
+    # Same text and order, but paragraph breaks differ (including single vs blank lines).
+    flatten = lambda paragraphs: re.sub(r"\s+", " ", " ".join(paragraphs)).strip()
+    if flatten(our_paras) == flatten(official_paras):
+        return "paragraph_boundary"
+
     return "substantive_text"
 
 # Calculate file hash for provenance

@@ -369,3 +369,22 @@ def acquire_pararev_full(
         json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
     )
     return manifest
+
+
+# Source configurations for pipeline import
+SOURCE_CONFIGS = {
+    "pararev": {
+        "acquire_function": acquire_pararev,
+        "source_id": SOURCE_ID,
+        "repo_url": REPO_URL,
+        "license_id": LICENSE_ID,
+        "description": "ParaRev manually annotated paragraph revision subset"
+    },
+    "pararev_full": {
+        "acquire_function": acquire_pararev_full,
+        "source_id": SOURCE_ID,
+        "repo_url": REPO_URL,
+        "license_id": LICENSE_ID,
+        "description": "ParaRev full unannotated paragraph revision corpus"
+    }
+}

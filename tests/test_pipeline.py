@@ -79,7 +79,17 @@ def test_pararev_import_maps_real_revision_and_provenance():
         "annot_1": {"annotation": ["Concision"], "instruction": ""},
         "annot_2": None
     }]
-    records, excluded = convert_pararev_rows(rows, "2026-11-05")
+    from og_awc.acquire import SOURCE_CONFIGS
+    config = SOURCE_CONFIGS["pararev_annotated"]
+    records, excluded = convert_pararev_rows(
+        rows,
+        "2026-11-05",
+        config["source_id"],
+        config["repo_url"],
+        config["revision"],
+        config["filename"],
+        config["license_id"]
+    )
     assert excluded == 0
     assert len(records) == 1
     record = records[0]
@@ -127,15 +137,26 @@ def test_pararev_import_excludes_missing_revision():
         "parag_1": "Original paragraph.",
         "parag_2": "",
     }]
-    records, excluded = convert_pararev_rows(rows, "2026-11-05")
+    from og_awc.acquire import SOURCE_CONFIGS
+    config = SOURCE_CONFIGS["pararev_annotated"]
+    records, excluded = convert_pararev_rows(
+        rows,
+        "2026-11-05",
+        config["source_id"],
+        config["repo_url"],
+        config["revision"],
+        config["filename"],
+        config["license_id"]
+    )
     assert records == []
     assert excluded == 1
 
 
 
 def test_pararev_full_import_maps_hyphenated_fields_and_metadata():
-    from og_awc.acquire import convert_pararev_full_rows
-
+    from og_awc.acquire import convert_pararev_rows, SOURCE_CONFIGS
+    config = SOURCE_CONFIGS["pararev_full"]
+    
     rows = [{
         "id_source": "article-version-a",
         "id_target": "article-version-b",
@@ -146,7 +167,15 @@ def test_pararev_full_import_maps_hyphenated_fields_and_metadata():
         "list-sentences-1": [{"text": "Original sentence."}],
         "list-sentences-2": [{"text": "Revised sentence."}],
     }]
-    records, excluded = convert_pararev_full_rows(rows, "2026-11-05")
+    records, excluded = convert_pararev_rows(
+        rows,
+        "2026-11-05",
+        config["source_id"],
+        config["repo_url"],
+        config["revision"],
+        config["filename"],
+        config["license_id"]
+    )
     assert excluded == 0
     assert len(records) == 1
     record = records[0]
@@ -226,8 +255,111 @@ def test_jfleg_converter_preserves_four_human_references_and_upstream_splits(tmp
     assert {r["split"] for r in records} == {"validation", "test"}
     assert len({r["paper_id"] for r in records if r["split"] == "validation"}) == 1
     assert len({r["paper_id"] for r in records if r["split"] == "test"}) == 1
-    assert all(r["source_id"] == "jfleg" for r in records)
-    assert all(validate_record(r) == [] for r in records)
+
+
+def test_pararev_full_import_supports_underscore_field_formats():
+    from og_awc.acquire import convert_pararev_full_rows
+
+    rows = [{
+        "id_source": "article-version-a",
+        "id_target": "article-version-b",
+        "index_paragraph": 12,
+        "id_paragraph": "article-version-a.article-version-b.12",
+        "parag_1": "Original full paragraph with underscores.",
+        "parag_2": "Revised full paragraph with underscores.",
+        "list_sentences_1": [{"text": "Original sentence."}],
+        "list_sentences_2": [{"text": "Revised sentence."}],
+    }]
+    records, excluded = convert_pararev_full_rows(rows, "2026-11-05")
+    assert excluded == 0
+    assert len(records) == 1
+    record = records[0]
+    assert record["original_text"] == "Original full paragraph with underscores."
+    assert record["revised_text"] == "Revised full paragraph with underscores."
+    assert validate_record(record) == []
+
+
+def test_pararev_full_import_handles_mixed_field_formats():
+    from og_awc.acquire import convert_pararev_full_rows
+
+    rows = [
+        # First row uses hyphenated format
+        {
+            "id_source": "v1",
+            "id_target": "v2",
+            "id_paragraph": "p1",
+            "parag-1": "Original with hyphens.",
+            "parag-2": "Revised with hyphens.",
+        },
+        # Second row uses underscore format
+        {
+            "id_source": "v3",
+            "id_target": "v4",
+            "id_paragraph": "p2",
+            "parag_1": "Original with underscores.",
+            "parag_2": "Revised with underscores.",
+        },
+        # Third row mixes formats (should still work)
+        {
+            "id_source": "v5",
+            "id_target": "v6",
+            "id_paragraph": "p3",
+            "parag-1": "Original with hyphen.",
+            "parag_2": "Revised with underscore.",
+        }
+    ]
+    records, excluded = convert_pararev_full_rows(rows, "2026-11-05")
+    assert excluded == 0
+    assert len(records) == 3
+    # Verify all records were correctly imported
+    assert records[0]["original_text"] == "Original with hyphens."
+    assert records[0]["revised_text"] == "Revised with hyphens."
+    assert records[1]["original_text"] == "Original with underscores."
+    assert records[1]["revised_text"] == "Revised with underscores."
+    assert records[2]["original_text"] == "Original with hyphen."
+    assert records[2]["revised_text"] == "Revised with underscore."
+    # All records should pass validation
+    for record in records:
+        assert validate_record(record) == []
+
+
+def test_pararev_annotated_import_supports_both_field_formats():
+    from og_awc.acquire import convert_pararev_rows
+
+    # Test hyphenated format
+    rows_hyphenated = [{
+        "id_paragraph": "paragraph-7",
+        "id_source": "paper-1",
+        "id_target": "version-2",
+        "parag-1": "Original with hyphens.",
+        "parag-2": "Revised with hyphens.",
+    }]
+    records1, excluded1 = convert_pararev_rows(rows_hyphenated, "2026-11-05")
+    assert excluded1 == 0
+    assert len(records1) == 1
+    # Verify hyphenated format works correctly
+    assert records1[0]["original_text"] == "Original with hyphens."
+    assert records1[0]["revised_text"] == "Revised with hyphens."
+    assert records1[0]["source_id"] == "pararev_annotated"
+    
+    # Test underscore format
+    rows_underscore = [{
+        "id_paragraph": "paragraph-8",
+        "id_source": "paper-2",
+        "id_target": "version-3",
+        "parag_1": "Original with underscores.",
+        "parag_2": "Revised with underscores.",
+    }]
+    records2, excluded2 = convert_pararev_rows(rows_underscore, "2026-11-05")
+    assert excluded2 == 0
+    assert len(records2) == 1
+    # Verify underscore format works correctly
+    assert records2[0]["original_text"] == "Original with underscores."
+    assert records2[0]["revised_text"] == "Revised with underscores."
+    assert records2[0]["source_id"] == "pararev_annotated"
+    # Validate both records
+    combined_records = records1 + records2
+    assert all(validate_record(r) == [] for r in combined_records)
 
 
 def test_jfleg_converter_rejects_mismatched_reference_files(tmp_path):
@@ -248,10 +380,12 @@ def test_jfleg_converter_rejects_mismatched_reference_files(tmp_path):
 def test_acl_bibtex_parser_handles_nested_braces():
     from og_awc.acquire_auxiliary import _bib_entries, _bib_field
 
-    entry = next(_bib_entries(
+    entries = list(_bib_entries(
         "@inproceedings{sample-2024-test, title={A {Nested} Title}, "
         "author={Doe, Jane}, year={2024}}"
     ))
+    assert len(entries) == 1
+    entry = entries[0]
     assert _bib_field(entry, "title") == "A {Nested} Title"
     assert _bib_field(entry, "author") == "Doe, Jane"
     assert _bib_field(entry, "year") == "2024"

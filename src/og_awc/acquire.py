@@ -242,9 +242,9 @@ def _pararev_full_record(
             "source_row_number": row_number,
             "source_article_version_id": source_version_id,
             "source_target_id": target_version_id,
-            "source_paragraph_index": row.get("index_paragraph", row.get("index-paragraph")),
-            "source_sentences_1": row.get("list-sentences-1", row.get("list_sentences_1")),
-            "source_sentences_2": row.get("list-sentences-2", row.get("list_sentences_2")),
+            "source_paragraph_index": (row.get("index_paragraph") if row.get("index_paragraph") is not None else row.get("index-paragraph")),
+            "source_sentences_1": row.get("list-sentences-1") or row.get("list_sentences_1"),
+            "source_sentences_2": row.get("list-sentences-2") or row.get("list_sentences_2"),
             "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
             "attribution": (
                 "Jourdan et al., ParaRev: Building a dataset for Scientific Paragraph "

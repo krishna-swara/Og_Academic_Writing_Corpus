@@ -132,16 +132,9 @@ def test_pararev_import_excludes_missing_revision():
         "parag_1": "Original paragraph.",
         "parag_2": "",
     }]
-    from og_awc.acquire import SOURCE_CONFIGS
-    config = SOURCE_CONFIGS["pararev_annotated"]
     records, excluded = convert_pararev_rows(
         rows,
-        "2026-11-05",
-        config["source_id"],
-        config["repo_url"],
-        config["revision"],
-        config["filename"],
-        config["license_id"]
+        "2026-11-05"
     )
     assert records == []
     assert excluded == 1
@@ -149,8 +142,7 @@ def test_pararev_import_excludes_missing_revision():
 
 
 def test_pararev_full_import_maps_hyphenated_fields_and_metadata():
-    from og_awc.acquire import convert_pararev_rows, SOURCE_CONFIGS
-    config = SOURCE_CONFIGS["pararev_full"]
+    from og_awc.acquire import convert_pararev_rows
     
     rows = [{
         "id_source": "article-version-a",
@@ -164,12 +156,7 @@ def test_pararev_full_import_maps_hyphenated_fields_and_metadata():
     }]
     records, excluded = convert_pararev_rows(
         rows,
-        "2026-11-05",
-        config["source_id"],
-        config["repo_url"],
-        config["revision"],
-        config["filename"],
-        config["license_id"]
+        "2026-11-05"
     )
     assert excluded == 0
     assert len(records) == 1

@@ -212,10 +212,10 @@ def main():
                         metrics["empty_malformed_edits"] += 1
                         continue
 
-                    # Process actual revision pairs
-                    metrics["revision_pairs_checked"] += 1
+                    # Reconstruct both sides first. Only successful comparisons count as checked.
                     our_source = reconstruct_text_from_indices(source_paper, source_idxs)
                     our_target = reconstruct_text_from_indices(target_paper, target_idxs)
+                    metrics["revision_pairs_checked"] += 1
 
                     # Add debug logging for first few comparisons to identify issues
                     if len(parity_audit) < 5:
@@ -265,7 +265,7 @@ def main():
                                 metrics["substantive_text_mismatches"] +=1
                         if target_class != "exact_match":
                             if target_class == "whitespace_only":
-                                metrics["whitespace_only_mismatches"] +=1
+                                metrics["whitespace_only_mismatch_sides"] += 1
                             elif target_class == "unicode_normalization":
                                 metrics["unicode_normalization_mismatches"] +=1
                             elif target_class == "paragraph_boundary":

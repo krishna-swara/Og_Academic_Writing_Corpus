@@ -1,0 +1,19 @@
+{
+  "raw_input_edits": 5145,
+  "unique_edits": 5145,
+  "duplicate_composite_keys": 0,
+  "missing_source_or_target_papers": 0,
+  "invalid_indices": 0,
+  "additions": 1137,
+  "deletions": 355,
+  "empty_malformed_edits": 63,
+  "revision_pairs_checked": 3590,
+  "exact_matches": 3102,
+  "mismatches": 488,
+  "reconstruction_exceptions": 0,
+  "whitespace_only_mismatches": 524,
+  "unicode_normalization_mismatches": 0,
+  "paragraph_boundary_mismatches": 0,
+  "substantive_text_mismatches": 0,
+  "invalid_reconstruction_mismatches": 0
+}

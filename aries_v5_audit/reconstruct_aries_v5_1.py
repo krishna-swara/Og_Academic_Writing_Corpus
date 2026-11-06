@@ -208,7 +208,8 @@ def main():
                         "official_source": official_source, "our_source": our_source,
                         "source_mismatch_class": source_class,
                         "official_target": official_target, "our_target": our_target,
-                        "target_mismatch_class": target_class
+                        "target_mismatch_class": target_class,
+                        "normalized_parity_match": is_normalized_equivalent(source_class, target_class)
                     }
                     parity_audit.append(audit_entry)
 

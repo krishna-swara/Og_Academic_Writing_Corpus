@@ -11,6 +11,8 @@ from datetime import datetime
 sys.path.append("/Users/sam/Downloads/aries-master")
 from aries.alignment.doc_edits import DocEdits, ParagraphEdit  # Correct official ARIES import (matches all prior scripts)
 from aries.util.s2orc import fuse_back_matter as official_fuse_back_matter  # Use official ARIES back-matter fusion
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from og_awc.aries_audit import classify_mismatch, is_normalized_equivalent
 
 # Configuration (correct paths matching all prior v3/v4 implementations)
 RAW_ARIES_DIR = Path("raw_sources/aries")
@@ -21,13 +23,6 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 # Test mode: process only first N documents (30-100 per audit recommendation)
 TEST_MODE = os.environ.get("ARIES_TEST_MODE", "0") == "1"
 TEST_DOC_LIMIT = int(os.environ.get("ARIES_TEST_DOC_LIMIT", "50"))
-
-# Audit-only classification normalization (never modifies original text)
-import re
-import unicodedata
-def normalize_for_classification(text):
-    text = unicodedata.normalize("NFC", text or "")
-    return re.sub(r"\s+", " ", text).strip()
 
 # We use the official ARIES fuse_back_matter() function imported as official_fuse_back_matter()
 # This ensures 100% match with ARIES's paragraph indexing, ordering, and separator logic
@@ -70,45 +65,6 @@ def reconstruct_text_from_indices(paper, indices):
     # Match official separator exactly (no trailing newlines)
     return "\n\n".join(texts)
 
-# Mismatch classification per audit requirements
-def classify_mismatch(our_text, official_text):
-    """Classify differences without changing either stored text."""
-    our_text = our_text or ""
-    official_text = official_text or ""
-    if our_text == official_text:
-        return "exact_match"
-
-    # Unicode-only differences must be detected before whitespace normalization.
-    our_nfc = unicodedata.normalize("NFC", our_text)
-    official_nfc = unicodedata.normalize("NFC", official_text)
-    if our_nfc == official_nfc:
-        return "unicode_normalization"
-
-    def normalized_paragraphs(value):
-        value = value.replace("\r\n", "\n").replace("\r", "\n")
-        paragraphs = [
-            paragraph for paragraph in re.split(r"\n\s*\n+", value.strip())
-            if paragraph.strip()
-        ]
-        return [
-            re.sub(r"[ \t\f\v]+", " ", paragraph).strip()
-            for paragraph in paragraphs
-        ]
-
-    our_paras = normalized_paragraphs(our_nfc)
-    official_paras = normalized_paragraphs(official_nfc)
-
-    # Same paragraph content and boundaries, with only horizontal spacing changes.
-    if our_paras == official_paras:
-        return "whitespace_only"
-
-    # Same text and order, but paragraph breaks differ (including single vs blank lines).
-    flatten = lambda paragraphs: re.sub(r"\s+", " ", " ".join(paragraphs)).strip()
-    if flatten(our_paras) == flatten(official_paras):
-        return "paragraph_boundary"
-
-    return "substantive_text"
-
 # Calculate file hash for provenance
 def calculate_file_hash(file_path):
     """Calculate SHA-256 hash of a file for provenance tracking"""
@@ -132,6 +88,11 @@ def main():
         "revision_pairs_checked": 0,
         "exact_matches": 0,
         "mismatches": 0,
+        "normalized_matches": 0,
+        "normalized_only_matches": 0,
+        "records_with_formatting_only_mismatch": 0,
+        "strict_parity_rate": 0.0,
+        "normalized_parity_rate": 0.0,
         "reconstruction_exceptions": 0,
         "whitespace_only_mismatch_sides": 0,
         "records_with_whitespace_only_mismatch": 0,
@@ -254,6 +215,13 @@ def main():
                     if source_class == "whitespace_only" or target_class == "whitespace_only":
                         metrics["records_with_whitespace_only_mismatch"] += 1
 
+                    normalized_pair = is_normalized_equivalent(source_class, target_class)
+                    if normalized_pair:
+                        metrics["normalized_matches"] += 1
+                        if source_class != "exact_match" or target_class != "exact_match":
+                            metrics["normalized_only_matches"] += 1
+                            metrics["records_with_formatting_only_mismatch"] += 1
+
                     if source_class == "exact_match" and target_class == "exact_match":
                         metrics["exact_matches"] += 1
                         validated_pairs.append({
@@ -316,6 +284,16 @@ def main():
     if metrics["exact_matches"] + metrics["mismatches"] != metrics["revision_pairs_checked"]:
         raise RuntimeError("Parity accounting failed: exact_matches + mismatches != revision_pairs_checked")
 
+    # Rates use successfully reconstructed revision pairs as denominator.
+    denominator = metrics["revision_pairs_checked"]
+    if denominator:
+        metrics["strict_parity_rate"] = round(
+            metrics["exact_matches"] / denominator * 100, 4
+        )
+        metrics["normalized_parity_rate"] = round(
+            metrics["normalized_matches"] / denominator * 100, 4
+        )
+
     # Save all outputs to v5 directory
     pairs_path = OUTPUT_DIR / "aries_validated_revision_pairs.jsonl"
     events_path = OUTPUT_DIR / "aries_revision_events.jsonl"
@@ -376,7 +354,6 @@ def main():
         json.dump(manifest, f, indent=2)
 
     # Final summary
-    parity_success_rate = (metrics["exact_matches"] / metrics["revision_pairs_checked"]) * 100 if metrics["revision_pairs_checked"] > 0 else 0
     print("\n=== ARIES v5 Test Run Complete ===")
     print(f"Documents processed: {docs_processed}")
     print(f"Raw input edits: {metrics['raw_input_edits']}")

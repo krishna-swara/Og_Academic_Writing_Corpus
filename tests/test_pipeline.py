@@ -83,12 +83,7 @@ def test_pararev_import_maps_real_revision_and_provenance():
     config = SOURCE_CONFIGS["pararev_annotated"]
     records, excluded = convert_pararev_rows(
         rows,
-        "2026-11-05",
-        config["source_id"],
-        config["repo_url"],
-        config["revision"],
-        config["filename"],
-        config["license_id"]
+        "2026-11-05"
     )
     assert excluded == 0
     assert len(records) == 1

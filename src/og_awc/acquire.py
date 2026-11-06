@@ -378,13 +378,26 @@ SOURCE_CONFIGS = {
         "source_id": SOURCE_ID,
         "repo_url": REPO_URL,
         "license_id": LICENSE_ID,
+        "revision": REVISION,
+        "filename": FILENAME,
         "description": "ParaRev manually annotated paragraph revision subset"
+    },
+    "pararev_annotated": {
+        "acquire_function": acquire_pararev,
+        "source_id": SOURCE_ID,
+        "repo_url": REPO_URL,
+        "license_id": LICENSE_ID,
+        "revision": REVISION,
+        "filename": FILENAME,
+        "description": "ParaRev manually annotated paragraph revision subset (alias for backward compatibility)"
     },
     "pararev_full": {
         "acquire_function": acquire_pararev_full,
         "source_id": SOURCE_ID,
         "repo_url": REPO_URL,
         "license_id": LICENSE_ID,
+        "revision": REVISION,
+        "filename": FULL_FILENAME,
         "description": "ParaRev full unannotated paragraph revision corpus"
     }
 }

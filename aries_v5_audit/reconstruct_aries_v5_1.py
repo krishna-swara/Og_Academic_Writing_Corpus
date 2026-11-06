@@ -133,27 +133,32 @@ def main():
             for _ in edits_list:
                 metrics["raw_input_edits"] += 1
 
-            # Load papers with fused back matter
-            source_paper = load_s2orc_paper(source_pdf_id, S2ORC_DIR)
-            target_paper = load_s2orc_paper(target_pdf_id, S2ORC_DIR)
-            if not source_paper or not target_paper:
-                metrics["missing_source_or_target_papers"] += len(edits_list)
-                docs_processed += 1
-                if TEST_MODE and docs_processed % 10 == 0:
-                    print(f"Processed {docs_processed}/{TEST_DOC_LIMIT} documents...")
-                continue
-
-            official_edits = DocEdits.from_list(source_paper, target_paper, edits_list)
-
+            # Deduplicate and count every edit before paper loading. Missing-paper
+            # records must still participate in the unique-edit reconciliation.
+            unique_edit_records = []
             for edit_rec in sorted(edits_list, key=lambda x: x["edit_id"]):
-                edit_id = edit_rec["edit_id"]
-                unique_key = (doc_id, edit_id)
+                unique_key = (doc_id, edit_rec["edit_id"])
                 if unique_key in seen_unique_keys:
                     metrics["duplicate_composite_keys"] += 1
                     continue
                 seen_unique_keys.add(unique_key)
                 metrics["unique_edits"] += 1
+                unique_edit_records.append(edit_rec)
 
+            # Load papers with fused back matter
+            source_paper = load_s2orc_paper(source_pdf_id, S2ORC_DIR)
+            target_paper = load_s2orc_paper(target_pdf_id, S2ORC_DIR)
+            if not source_paper or not target_paper:
+                metrics["missing_source_or_target_papers"] += len(unique_edit_records)
+                docs_processed += 1
+                if TEST_MODE and docs_processed % 10 == 0:
+                    print(f"Processed {docs_processed}/{TEST_DOC_LIMIT} documents...")
+                continue
+
+            official_edits = DocEdits.from_list(source_paper, target_paper, unique_edit_records)
+
+            for edit_rec in unique_edit_records:
+                edit_id = edit_rec["edit_id"]
                 source_idxs = edit_rec["source_idxs"]
                 target_idxs = edit_rec["target_idxs"]
 

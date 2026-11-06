@@ -142,7 +142,7 @@ def test_pararev_import_excludes_missing_revision():
 
 
 def test_pararev_full_import_maps_hyphenated_fields_and_metadata():
-    from og_awc.acquire import convert_pararev_rows
+    from og_awc.acquire import convert_pararev_full_rows
     
     rows = [{
         "id_source": "article-version-a",
@@ -154,7 +154,7 @@ def test_pararev_full_import_maps_hyphenated_fields_and_metadata():
         "list-sentences-1": [{"text": "Original sentence."}],
         "list-sentences-2": [{"text": "Revised sentence."}],
     }]
-    records, excluded = convert_pararev_rows(
+    records, excluded = convert_pararev_full_rows(
         rows,
         "2026-11-05"
     )
@@ -322,7 +322,7 @@ def test_pararev_annotated_import_supports_both_field_formats():
     # Verify hyphenated format works correctly
     assert records1[0]["original_text"] == "Original with hyphens."
     assert records1[0]["revised_text"] == "Revised with hyphens."
-    assert records1[0]["source_id"] == "pararev_annotated"
+    assert records1[0]["source_id"] == "pararev"
     
     # Test underscore format
     rows_underscore = [{
@@ -338,7 +338,7 @@ def test_pararev_annotated_import_supports_both_field_formats():
     # Verify underscore format works correctly
     assert records2[0]["original_text"] == "Original with underscores."
     assert records2[0]["revised_text"] == "Revised with underscores."
-    assert records2[0]["source_id"] == "pararev_annotated"
+    assert records2[0]["source_id"] == "pararev"
     # Validate both records
     combined_records = records1 + records2
     assert all(validate_record(r) == [] for r in combined_records)

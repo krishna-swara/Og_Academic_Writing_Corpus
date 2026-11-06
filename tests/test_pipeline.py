@@ -245,7 +245,7 @@ def test_pararev_full_import_supports_underscore_field_formats():
     rows = [{
         "id_source": "article-version-a",
         "id_target": "article-version-b",
-        "index_paragraph": 12,
+        "index-paragraph": 12,
         "id_paragraph": "article-version-a.article-version-b.12",
         "parag_1": "Original full paragraph with underscores.",
         "parag_2": "Revised full paragraph with underscores.",
@@ -258,6 +258,9 @@ def test_pararev_full_import_supports_underscore_field_formats():
     record = records[0]
     assert record["original_text"] == "Original full paragraph with underscores."
     assert record["revised_text"] == "Revised full paragraph with underscores."
+    assert record["provenance"]["source_paragraph_index"] == 12
+    assert record["provenance"]["source_sentences_1"] == [{"text": "Original sentence."}]
+    assert record["provenance"]["source_sentences_2"] == [{"text": "Revised sentence."}]
     assert validate_record(record) == []
 
 

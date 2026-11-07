@@ -39,3 +39,16 @@ The validated revision-pair output remains strict-only. Normalized-only pairs re
 Pure classification helpers live in `src/og_awc/aries_audit.py`; regression tests are in `tests/test_aries_audit.py`. Tests cover exact text, horizontal whitespace, paragraph breaks, Unicode NFC, changed words, changed word order, changed paragraph content, and preservation of original strings.
 
 A 50-document user-run diagnostic previously found 514 paragraph-boundary mismatch sides with identical flattened text. That is a test-sample observation, not a full-corpus result. The full 1,720-document run remains outstanding.
+
+
+## Portability and failure accounting follow-up
+
+- The runner resolves the ARIES checkout from `ARIES_SOURCE_ROOT`; when unset, it uses `~/Downloads/aries-master` as a backward-compatible default. The configured root is inserted at the front of `sys.path` before ARIES imports.
+- The manifest records each imported implementation's Python module, path relative to the configured ARIES source root, and SHA-256. The runner refuses to record implementation provenance if either imported source file is outside that root.
+- S2ORC loading/fusion failures and `DocEdits.from_list()` construction failures are caught at document scope. Every affected unique edit is written to the reconstruction error log and counted in a dedicated terminal category, so these failures do not silently abort or disappear from reconciliation.
+- The terminal reconciliation includes missing papers, document-load errors, edit-construction errors, additions, deletions, empty/malformed edits, checked revision pairs, invalid indices, and per-edit reconstruction exceptions.
+- The final console summary prints the terminal categories and the reconciled total. The unused `ParagraphEdit` import and unpopulated `invalid_reconstruction_mismatches` metric have been removed.
+
+## Interpretation of the checked-in full audit log
+
+`full_audit_log.txt` contains captured output reporting 1,720 processed documents and a 87.23% strict / 100.00% normalized parity result. It is retained as a historical run log, but the corresponding machine-readable metrics, complete output set, and run manifest are not checked in alongside it. Therefore the log is evidence of a user-reported run, not independently reproducible proof that the current v5.1 runner produced those results. A fresh full run must preserve its metrics, error files, output hashes, implementation hashes, and input hashes together before its results are treated as validated.

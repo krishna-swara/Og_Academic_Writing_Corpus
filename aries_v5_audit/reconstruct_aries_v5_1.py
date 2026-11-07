@@ -140,6 +140,8 @@ def main():
     s2orc_hashes = {}
     for s2orc_file in S2ORC_DIR.glob("*.json"):
         s2orc_hashes[s2orc_file.name] = calculate_file_hash(s2orc_file)
+    # Get properly structured ARIES implementation source hashes using dedicated provenance function
+    aries_implementation_hashes = get_aries_implementation_source_hashes()
 
     # Process all documents (stop at TEST_DOC_LIMIT if in test mode)
     with open(PAPER_EDITS_PATH, 'r') as f:
@@ -377,7 +379,7 @@ def main():
         },
         "python_version": sys.version,
         "aries_implementation_version": "identified_by_imported_source_file_sha256",
-        "aries_implementation_source_hashes": get_aries_implementation_source_hashes(),
+        "aries_implementation_source_hashes": aries_implementation_hashes,
         "audit_note": (
             "The ARIES checkout may not be a Git repository, so no commit is asserted. "
             "SHA-256 hashes identify the actual imported DocEdits and fuse_back_matter "

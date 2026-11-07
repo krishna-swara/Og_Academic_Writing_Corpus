@@ -8,11 +8,22 @@ import inspect
 import sys
 from pathlib import Path
 from datetime import datetime
-# Add official ARIES module path to sys.path (matches working v3/v4 configurations)
-sys.path.append("/Users/sam/Downloads/aries-master")
-from aries.alignment.doc_edits import DocEdits, ParagraphEdit  # Correct official ARIES import (matches all prior scripts)
-from aries.util.s2orc import fuse_back_matter as official_fuse_back_matter  # Use official ARIES back-matter fusion
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+# Resolve the official ARIES checkout without embedding a machine-specific username.
+# Set ARIES_SOURCE_ROOT when the checkout is not at ~/Downloads/aries-master.
+REPO_ROOT = Path(__file__).resolve().parents[1]
+ARIES_SOURCE_ROOT = Path(
+    os.environ.get("ARIES_SOURCE_ROOT", str(Path.home() / "Downloads" / "aries-master"))
+).expanduser().resolve()
+if not ARIES_SOURCE_ROOT.is_dir():
+    raise RuntimeError(
+        f"ARIES source checkout not found at {ARIES_SOURCE_ROOT}. "
+        "Set ARIES_SOURCE_ROOT to the directory containing the 'aries' package."
+    )
+sys.path.insert(0, str(ARIES_SOURCE_ROOT))
+from aries.alignment.doc_edits import DocEdits
+from aries.util.s2orc import fuse_back_matter as official_fuse_back_matter
+sys.path.insert(0, str(REPO_ROOT / "src"))
 from og_awc.aries_audit import classify_mismatch, is_normalized_equivalent
 
 # Configuration (correct paths matching all prior v3/v4 implementations)
@@ -75,14 +86,17 @@ def calculate_file_hash(file_path):
             hash_sha256.update(chunk)
     return hash_sha256.hexdigest()
 
-def get_aries_implementation_source_hashes():
-    """Hash the actual imported ARIES implementation files (not the data inputs)."""
+def get_aries_implementation_source_hashes(source_root):
+    """Hash the exact imported ARIES implementation files and identify their modules."""
     sources = {
-        "DocEdits": inspect.getsourcefile(DocEdits),
-        "fuse_back_matter": inspect.getsourcefile(official_fuse_back_matter),
+        "DocEdits": DocEdits,
+        "fuse_back_matter": official_fuse_back_matter,
     }
     hashes = {}
-    for component, source_path in sources.items():
+    root = Path(source_root).resolve()
+    for component, imported_object in sources.items():
+        source_path = inspect.getsourcefile(imported_object)
+        module = inspect.getmodule(imported_object)
         if not source_path:
             raise RuntimeError(
                 f"Cannot locate imported ARIES source file for {component}; "
@@ -91,8 +105,16 @@ def get_aries_implementation_source_hashes():
         path = Path(source_path).resolve()
         if not path.is_file():
             raise RuntimeError(f"Imported ARIES source file does not exist: {path}")
+        try:
+            relative_path = path.relative_to(root).as_posix()
+        except ValueError as exc:
+            raise RuntimeError(
+                f"Imported {component} source ({path}) is outside configured "
+                f"ARIES_SOURCE_ROOT ({root}); refusing ambiguous provenance."
+            ) from exc
         hashes[component] = {
-            "file": path.name,
+            "module": module.__name__ if module else None,
+            "path": relative_path,
             "sha256": calculate_file_hash(path),
         }
     return hashes
@@ -104,6 +126,8 @@ def main():
         "unique_edits": 0,
         "duplicate_composite_keys": 0,
         "missing_source_or_target_papers": 0,
+        "document_load_errors": 0,
+        "edit_construction_errors": 0,
         "invalid_indices": 0,
         "additions": 0,
         "deletions": 0,
@@ -121,8 +145,7 @@ def main():
         "records_with_whitespace_only_mismatch": 0,
         "unicode_normalization_mismatches": 0,
         "paragraph_boundary_mismatches": 0,
-        "substantive_text_mismatches": 0,
-        "invalid_reconstruction_mismatches": 0
+        "substantive_text_mismatches": 0
     }
     seen_unique_keys = set()
     docs_processed = 0
@@ -141,7 +164,7 @@ def main():
     for s2orc_file in S2ORC_DIR.glob("*.json"):
         s2orc_hashes[s2orc_file.name] = calculate_file_hash(s2orc_file)
     # Get properly structured ARIES implementation source hashes using dedicated provenance function
-    aries_implementation_hashes = get_aries_implementation_source_hashes()
+    aries_implementation_hashes = get_aries_implementation_source_hashes(ARIES_SOURCE_ROOT)
 
     # Process all documents (stop at TEST_DOC_LIMIT if in test mode)
     with open(PAPER_EDITS_PATH, 'r') as f:
@@ -170,17 +193,50 @@ def main():
                 metrics["unique_edits"] += 1
                 unique_edit_records.append(edit_rec)
 
-            # Load papers with fused back matter
-            source_paper = load_s2orc_paper(source_pdf_id, S2ORC_DIR)
-            target_paper = load_s2orc_paper(target_pdf_id, S2ORC_DIR)
-            if not source_paper or not target_paper:
-                metrics["missing_source_or_target_papers"] += len(unique_edit_records)
+            # Load both papers with explicit document-level error accounting.
+            try:
+                source_paper = load_s2orc_paper(source_pdf_id, S2ORC_DIR)
+                target_paper = load_s2orc_paper(target_pdf_id, S2ORC_DIR)
+            except Exception as exc:
+                metrics["document_load_errors"] += len(unique_edit_records)
+                for edit_rec in unique_edit_records:
+                    reconstruction_errors.append({
+                        "doc_id": doc_id,
+                        "edit_id": edit_rec.get("edit_id"),
+                        "error": repr(exc),
+                        "type": "document_load_error",
+                    })
                 docs_processed += 1
-                if TEST_MODE and docs_processed % 10 == 0:
-                    print(f"Processed {docs_processed}/{TEST_DOC_LIMIT} documents...")
+                if docs_processed % 10 == 0:
+                    print(f"Processed {docs_processed}/{TEST_DOC_LIMIT if TEST_MODE else 'all'} documents...")
                 continue
 
-            official_edits = DocEdits.from_list(source_paper, target_paper, unique_edit_records)
+            if source_paper is None or target_paper is None:
+                metrics["missing_source_or_target_papers"] += len(unique_edit_records)
+                docs_processed += 1
+                if docs_processed % 10 == 0:
+                    print(f"Processed {docs_processed}/{TEST_DOC_LIMIT if TEST_MODE else 'all'} documents...")
+                continue
+
+            # DocEdits construction can fail for malformed metadata or incompatible
+            # upstream records. Account for every edit in the affected document.
+            try:
+                official_edits = DocEdits.from_list(
+                    source_paper, target_paper, unique_edit_records
+                )
+            except Exception as exc:
+                metrics["edit_construction_errors"] += len(unique_edit_records)
+                for edit_rec in unique_edit_records:
+                    reconstruction_errors.append({
+                        "doc_id": doc_id,
+                        "edit_id": edit_rec.get("edit_id"),
+                        "error": repr(exc),
+                        "type": "edit_construction_error",
+                    })
+                docs_processed += 1
+                if docs_processed % 10 == 0:
+                    print(f"Processed {docs_processed}/{TEST_DOC_LIMIT if TEST_MODE else 'all'} documents...")
+                continue
 
             for edit_rec in unique_edit_records:
                 edit_id = edit_rec["edit_id"]
@@ -300,6 +356,8 @@ def main():
     # Reconciliation: every unique edit must be assigned to one terminal category.
     terminal_total = (
         metrics["missing_source_or_target_papers"]
+        + metrics["document_load_errors"]
+        + metrics["edit_construction_errors"]
         + metrics["additions"]
         + metrics["deletions"]
         + metrics["empty_malformed_edits"]
@@ -395,6 +453,14 @@ def main():
     print(f"Documents processed: {docs_processed}")
     print(f"Raw input edits: {metrics['raw_input_edits']}")
     print(f"Unique edits: {metrics['unique_edits']}")
+    print(f"Missing source/target papers: {metrics['missing_source_or_target_papers']}")
+    print(f"Document load errors: {metrics['document_load_errors']}")
+    print(f"DocEdits construction errors: {metrics['edit_construction_errors']}")
+    print(f"Additions: {metrics['additions']}")
+    print(f"Deletions: {metrics['deletions']}")
+    print(f"Empty/malformed edits: {metrics['empty_malformed_edits']}")
+    print(f"Invalid indices: {metrics['invalid_indices']}")
+    print(f"Reconstruction exceptions: {metrics['reconstruction_exceptions']}")
     print(f"Revision pairs checked: {metrics['revision_pairs_checked']}")
     print(f"Strict parity: {metrics['strict_parity_rate']:.2f}% ({metrics['exact_matches']} exact pairs)")
     print(f"Normalized parity: {metrics['normalized_parity_rate']:.2f}% ({metrics['normalized_matches']} normalized-equivalent pairs)")
@@ -403,7 +469,7 @@ def main():
     print(f"Formatting-only mismatch records: {metrics['records_with_formatting_only_mismatch']}")
     print(f"Whitespace-only mismatch sides: {metrics['whitespace_only_mismatch_sides']}")
     print(f"Records with whitespace-only mismatch: {metrics['records_with_whitespace_only_mismatch']}")
-    print(f"Additions: {metrics['additions']}, Deletions: {metrics['deletions']}")
+    print(f"All terminal categories reconcile to unique edits: {terminal_total}")
     print(f"All outputs saved to: {OUTPUT_DIR}")
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ import json
 import sys
 
 from .acquire import acquire_pararev, acquire_pararev_full
+from .acquire_hf import acquire_coedit
 from .acquire_auxiliary import acquire_acl_catalog, acquire_jfleg
 from .pipeline import prepare_dataset
 from .validation import validate_jsonl
@@ -35,10 +36,19 @@ def main() -> None:
     acquire_acl = sub.add_parser("acquire-acl-catalog", help="download ACL Anthology bibliographic metadata only")
     acquire_acl.add_argument("--raw-dir", default="raw_sources/acl_anthology")
     acquire_acl.add_argument("--output", default="processed/acl_anthology_metadata.jsonl")
+    coedit = sub.add_parser("acquire-coedit", help="download CoEdIT to a local pending-review JSONL file")
+    coedit.add_argument("--output", default="processed/coedit_pending_review.jsonl")
     batch = sub.add_parser("acquire-batch", help="acquire ParaRev full, JFLEG, and ACL metadata in one run")
     batch.add_argument("--accept-license", action="store_true", help="acknowledge CC BY-NC-SA 4.0 terms for ParaRev and JFLEG")
     args = parser.parse_args()
-    if args.command == "validate":
+    if args.command == "acquire-coedit":
+        try:
+            manifest = acquire_coedit(args.output)
+        except (RuntimeError, ValueError, OSError) as exc:
+            print(str(exc), file=sys.stderr)
+            raise SystemExit(1) from exc
+        print(json.dumps(manifest, indent=2))
+    elif args.command == "validate":
         errors = validate_jsonl(args.input)
         if errors:
             print("\n".join(errors), file=sys.stderr)

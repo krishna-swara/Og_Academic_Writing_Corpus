@@ -47,7 +47,9 @@ def convert_coedit_rows(
             "record_id": record_id,
             # Sentence-level CoEdIT rows have no reliable paper grouping.
             # Each upstream row is an explicit split-isolation group.
-            "paper_id": "not_provided",\n            "split_group_id": record_id,\n            "split_group_type": "upstream_record",
+            "paper_id": "not_provided",
+            "split_group_id": record_id,
+            "split_group_type": "upstream_record",
             "source_id": "grammarly-coedit",
             "record_type": "revision_pair",
             "original_text": original_text,
@@ -103,9 +105,11 @@ def acquire_coedit(output_path: str | Path) -> dict[str, Any]:
 
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
-    with output.open("w", encoding="utf-8", newline="\n") as handle:
+    with output.open("w", encoding="utf-8", newline="
+") as handle:
         for record in records:
-            handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
+            handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "
+")
 
     manifest = {
         "dataset_id": DATASET_ID,
@@ -120,6 +124,7 @@ def acquire_coedit(output_path: str | Path) -> dict[str, Any]:
         "approved_for_retrieval": False,
     }
     output.with_suffix(output.suffix + ".manifest.json").write_text(
-        json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+        json.dumps(manifest, indent=2) + "
+", encoding="utf-8"
     )
     return manifest

@@ -16,7 +16,7 @@ def test_coedit_conversion_preserves_task_and_marks_pending_review():
     assert record["original_text"] == "This are a sentence."
     assert record["revised_text"] == "This is a sentence."
     assert record["edit_labels"] == ["gec"]
-    assert record["paper_id"] == record["record_id"]
+    assert record["paper_id"] == "not_provided"\n    assert record["split_group_id"] == record["record_id"]
     assert record["meaning_preserved"] is False
     assert record["human_review_status"] == "pending"
     assert record["provenance"]["rights_review_status"] == "pending_upstream_lineage_review"

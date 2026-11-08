@@ -47,7 +47,7 @@ def convert_coedit_rows(
             "record_id": record_id,
             # Sentence-level CoEdIT rows have no reliable paper grouping.
             # Each upstream row is an explicit split-isolation group.
-            "paper_id": record_id,
+            "paper_id": "not_provided",\n            "split_group_id": record_id,\n            "split_group_type": "upstream_record",
             "source_id": "grammarly-coedit",
             "record_type": "revision_pair",
             "original_text": original_text,

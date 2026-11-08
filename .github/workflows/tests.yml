@@ -2,9 +2,14 @@ name: tests
 
 on:
   push:
-    branches: [main, "build/**"]
+    branches:
+      - main
+      - "build/**"
+      - "fix/**"
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - "audit/aries-v5"
 
 permissions:
   contents: read

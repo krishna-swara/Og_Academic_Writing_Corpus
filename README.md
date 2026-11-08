@@ -56,6 +56,18 @@ Individual commands are also available: `og-awc acquire-jfleg --accept-license` 
 - JFLEG declares CC BY-NC-SA 4.0 but is a general grammatical-error-correction benchmark, not academic writing. Keep it separate as an auxiliary benchmark.
 - ParaRev is extracted from CASIMIR. Do not combine both sources as independent examples; track lineage and deduplicate.
 
+### Commercial-flexible starter acquisition: CoEdIT
+
+The public CoEdIT release is the first general text-editing candidate. Install the optional Hugging Face dependencies and acquire the public train split into a local pending-review file:
+
+```bash
+python -m pip install -e ".[dev,hf]"
+og-awc acquire-coedit
+og-awc validate --input processed/coedit_pending_review.jsonl
+```
+
+The importer pins the current Hub commit SHA in its manifest and preserves task labels and upstream IDs. It marks every row as pending rights/lineage/quality review, sets text-mining permission to false until reviewed, and never approves records for training or retrieval. The data stays local and is not committed to Git. See [`docs/DATASET_ACQUISITION_PLAN.md`](docs/DATASET_ACQUISITION_PLAN.md) and [`metadata/dataset_registry.json`](metadata/dataset_registry.json) before using the data.
+
 ## Core features
 
 - Structured JSONL validation and provenance.

@@ -105,11 +105,9 @@ def acquire_coedit(output_path: str | Path) -> dict[str, Any]:
 
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
-    with output.open("w", encoding="utf-8", newline="
-") as handle:
+    with output.open("w", encoding="utf-8", newline="\n") as handle:
         for record in records:
-            handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "
-")
+            handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
 
     manifest = {
         "dataset_id": DATASET_ID,
@@ -124,7 +122,6 @@ def acquire_coedit(output_path: str | Path) -> dict[str, Any]:
         "approved_for_retrieval": False,
     }
     output.with_suffix(output.suffix + ".manifest.json").write_text(
-        json.dumps(manifest, indent=2) + "
-", encoding="utf-8"
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
     )
     return manifest

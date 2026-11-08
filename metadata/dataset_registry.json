@@ -1,0 +1,57 @@
+{
+  "registry_version": "1.0.0",
+  "policy": {
+    "unknown_or_conflicting_rights": "quarantine",
+    "raw_text_in_git": false,
+    "detector_scores_as_training_rewards": false,
+    "pending_records_available_to_retrieval": false
+  },
+  "sources": [
+    {
+      "source_id": "grammarly-coedit",
+      "hub_id": "grammarly/coedit",
+      "role": ["revision_pairs", "text_editing_benchmark"],
+      "languages": ["en"],
+      "hub_declared_license": "apache-2.0",
+      "rights_review_status": "pending_upstream_lineage_review",
+      "reported_public_rows": 69100,
+      "source_card_url": "https://huggingface.co/datasets/grammarly/coedit",
+      "paper_url": "https://arxiv.org/abs/2305.09857",
+      "acquisition_status": "not_downloaded",
+      "notes": "Public release excludes examples withheld for licensing restrictions. Preserve task labels and upstream IDs. Do not claim all examples are human-authored or meaning-preserving without record-level evidence. Quarantine pending source lineage and licence review."
+    },
+    {
+      "source_id": "pleias-common-corpus",
+      "hub_id": "PleIAs/common_corpus",
+      "role": ["unpaired_style_reference"],
+      "languages": ["multilingual"],
+      "hub_declared_license": "record_level_mixed",
+      "rights_review_status": "record_level_filter_required",
+      "source_card_url": "https://huggingface.co/datasets/PleIAs/common_corpus",
+      "acquisition_status": "not_downloaded",
+      "notes": "Very large dataset (current viewer reports about 4.49 TB). Never bulk-download. Stream only individually approved public-domain/CC0/CC-BY or otherwise approved records, retaining document-level licence and provenance. Not revision-pair supervision."
+    },
+    {
+      "source_id": "jhu-clsp-jfleg",
+      "hub_id": "jhu-clsp/jfleg",
+      "role": ["grammar_fluency_benchmark"],
+      "languages": ["en"],
+      "hub_declared_license": "cc-by-nc-sa-4.0",
+      "rights_review_status": "noncommercial_only_unless_separate_permission",
+      "source_card_url": "https://huggingface.co/datasets/jhu-clsp/jfleg",
+      "acquisition_status": "not_acquired",
+      "notes": "Keep out of the default commercial-eligible corpus. Preserve four references and upstream benchmark splits if separately used for non-commercial research."
+    },
+    {
+      "source_id": "pararev",
+      "hub_id": "taln-ls2n/pararev",
+      "role": ["academic_revision_pairs"],
+      "languages": ["en"],
+      "hub_declared_license": "cc-by-nc-sa-4.0",
+      "rights_review_status": "noncommercial_only_unless_separate_permission",
+      "source_card_url": "https://huggingface.co/datasets/taln-ls2n/pararev",
+      "acquisition_status": "not_acquired",
+      "notes": "Do not use in default commercial-eligible corpus; underlying paper rights also need review."
+    }
+  ]
+}

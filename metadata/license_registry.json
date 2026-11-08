@@ -28,6 +28,13 @@
       "status": "internal_fixture",
       "redistribution_allowed": true,
       "notes": "For original synthetic test fixtures created for this repository only."
+    },
+    {
+      "license_id": "cc-by-4.0",
+      "spdx_id": "CC-BY-4.0",
+      "status": "upstream_declared_local_opt_in_only",
+      "redistribution_allowed": false,
+      "notes": "ARIES and Re3-Sci cards declare CC BY 4.0. Attribution required for distribution; no additional restrictions. This does not resolve third-party rights in underlying paper text; local-only pending rights review."
     }
   ]
 }

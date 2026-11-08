@@ -92,6 +92,28 @@
       "license_id": "per_item",
       "reported_size": "3 seed papers catalogued in metadata/seed_papers.json",
       "relationship_notes": "Paper metadata and links only at this stage. ACL policy is publication-date based for ACL materials (pre-2016 CC BY-NC-SA 3.0; 2016 onward CC BY 4.0); third-party content is excluded. Verify individual paper and included material before text ingestion."
+    },
+    {
+      "source_id": "aries",
+      "name": "ARIES: Academic Reviewer-Initiated Edits Dataset",
+      "url": "https://huggingface.co/datasets/NAACL-AITH/aries",
+      "revision": "main",
+      "file": "aries_revision_pairs.jsonl",
+      "status": "local_acquisition_opt_in",
+      "license_id": "cc-by-4.0",
+      "reported_size": "Reviewer-initiated academic paper edits with reviewer comments",
+      "relationship_notes": "Dataset card declares CC BY 4.0. ARIES contains reviewer comment-driven revisions from academic papers; no known overlap with existing ParaRev/CASIMIR datasets. Underlying article rights remain unresolved; local-only pending full rights review."
+    },
+    {
+      "source_id": "re3sci",
+      "name": "Re3-Sci: Scientific Edits with Intentions Dataset",
+      "url": "https://huggingface.co/datasets/UKPLab/re3-sci",
+      "revision": "main",
+      "file": "re3sci_revision_pairs.jsonl",
+      "status": "local_acquisition_opt_in",
+      "license_id": "cc-by-4.0",
+      "reported_size": "11.6k sentence-level edits across 314 scientific publications",
+      "relationship_notes": "Dataset card declares CC BY 4.0. Re3-Sci contains labeled scientific paper revisions with edit intentions; no known overlap with existing ParaRev/CASIMIR/ARIES datasets. Underlying article rights remain unresolved; local-only pending full rights review."
     }
   ]
 }

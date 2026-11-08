@@ -61,7 +61,7 @@ def prepare_dataset(input_path: str | Path, output_dir: str | Path, seed: str = 
         "train_records": sum(r["split"] == "train" for r in split_records),
         "validation_records": sum(r["split"] == "validation" for r in split_records),
         "test_records": sum(r["split"] == "test" for r in split_records),
-        "split_unit": "paper_id",
+        "split_unit": "split_group_id" if any(r.get("split_group_id") for r in split_records) else "paper_id",
         "seed": seed,
         "publication_note": "Local outputs only. Review source licenses and redistribution permissions before publishing.",
     }

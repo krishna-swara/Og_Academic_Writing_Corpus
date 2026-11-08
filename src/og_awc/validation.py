@@ -19,6 +19,8 @@ def validate_record(record: dict[str, Any]) -> list[str]:
     for field in ("record_id", "source_id", "paper_id", "original_text"):
         if not isinstance(record[field], str) or not record[field].strip():
             errors.append(f"{field} must be a non-empty string")
+    if record["paper_id"] == "not_provided" and not (isinstance(record.get("split_group_id"), str) and record["split_group_id"].strip()):
+        errors.append("records without a paper_id require a non-empty split_group_id")
     if record["record_type"] not in VALID_TYPES:
         errors.append("record_type is not supported")
     if record["split"] not in VALID_SPLITS:
